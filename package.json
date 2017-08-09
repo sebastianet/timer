@@ -1,0 +1,21 @@
+{
+  "name": "timer",
+  "version": "1.0.0",
+  "description": "genera HTML cada Timeout",
+  "main": "gen_html.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node gen_html.js"
+  },
+  "author": "En Sebas",
+  "license": "MIT",
+  "private": "true",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/sebastianet/timer.git"
+  },
+  "dependencies": {
+    "express": "^4.15.3"
+  },
+  "devDependencies": {}
+}

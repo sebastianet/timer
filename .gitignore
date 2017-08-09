@@ -1,0 +1,8 @@
+data
+node_modules
+client/vendor
+client/other
+client/tests
+tests
+scratch
+*.log
