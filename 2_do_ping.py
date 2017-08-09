@@ -8,15 +8,17 @@ import pyping
 numArg = len( sys.argv )
 idx = 0
 
-for arg in sys.argv:
-    print 'IDX' + str(idx) + ':' + arg
-    idx = idx + 1
+# for arg in sys.argv:
+#     print 'IDX' + str(idx) + ':' + arg
+#     idx = idx + 1
 
-print 'Number of arguments: (', numArg, ') arguments.'
-print 'Argument List:', str(sys.argv)
+# print 'Number of arguments: (', numArg, ') arguments.'
+# print 'Argument List:', str(sys.argv)
 
 szDesti = '74.125.143.104'
-print 'Lets ping (', szDesti, ').'
+szDesti = sys.argv[1]                         # in nodejs we code "python_options.args[0] = szIP ;"
+
+# print 'Lets ping (', szDesti, ').'
 response = pyping.ping( szDesti )
 
 if response.ret_code == 0:

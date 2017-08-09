@@ -20,13 +20,18 @@
 //    https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array
 //    https://nodejs.org/api/fs.html#fs_file_system
 //
+// Pendent :
+//
+//    Posar FAVICON.ICO
+//
 // Versions list :
 //
 // 1.1.a - start code
 // 1.1.b - delete old file, create new one
+// 1.1.c - llegir socis.json
 //
 
-var myVersio     = "v1.1.b" ;
+var myVersio     = "v1.1.c" ;
 
 // var http    = require ( 'http' ) ;
 var express = require( 'express' ) ;
@@ -179,6 +184,9 @@ function myTimeoutFunction( arg ) {
 
 } ; // myTimeoutFunction()
 
+// llegir les dades dels socis
+
+socis.json
 
 // set a repetitive timeout
 setInterval( myTimeoutFunction, app.get( 'cfgLapse' ) ) ; // lets call own function every defined lapse
