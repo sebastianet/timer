@@ -1,4 +1,15 @@
 
+.t_socis {
+    border: 1px solid black ;
+    width: 100% ;
+}
+.t_socis th {
+    background-color: #C0C0C0 ;
+    color : blue ;
+}
+.t_soci_aturat  { background-color: #FFCC99 ; }
+.t_soci_working { background-color: #CCFF99 ; }
+
 html, body {
     margin: 0 ;
     padding: 0 ;
