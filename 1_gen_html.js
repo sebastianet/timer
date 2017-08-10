@@ -24,10 +24,13 @@
 //
 //    .
 //
-// Requisits :
+// Requisits : nodejs i python
 //
-//    nodejs - comprovat amb pi@odin:~/timer $ node -v   : v5.12.0
-//    python - comprovat amb pi@odin:~/timer $ python -V : Python 2.7.9
+//    linux Raspberry : $ node -v   :        v5.12.0
+//    linux Raspberry : $ python -V : Python 2.7.9
+//
+//    win : C:\sebas\miscosas\node>node -v   :        v4.4.7
+//    win : C:\sebas\miscosas\node>python -V : Python 2.7.11
 //
 // Versions list :
 //
@@ -52,9 +55,9 @@ var idxSoci = 0 ;                  // soci amb el que estem treballant ara matei
 
 var python_options = {
     mode: 'text',
-    pythonPath: '/usr/bin/python',
+    pythonPath: '/usr/bin/python',     // must be blank in Windows, as we did set PYTHONPATH envir var
     pythonOptions: ['-u'],
-    scriptPath: '/home/pi/timer',
+    scriptPath: '/home/pi/timer',      // must be as "C:/sebas/miscosas/node/timer" in WindowS
     args: ['value1', 'value2']
 } ;
 
@@ -200,13 +203,13 @@ function myTimeout_Gen_HTML_Function ( arg ) { // generar pagina HTML
 //        console.log( '(b2) create ' + newFN ) ;
 
         var S1 = '<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/html40/loose.dtd">\n' ;
-        S1 += '<HTML> <HEAD>\n' ;
+        S1 += '<HTML>\n<HEAD>\n' ;
         S1 += '<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">\n' ;
         S1 += '<META HTTP-EQUIV="Refresh" CONTENT="30;URL=./pagina.html">\n' ;
         S1 += '<LINK REL="SHORTCUT ICON" HREF="./favicon.ico";>\n' ;
         S1 += '<LINK REL=STYLESHEET HREF="pagina.css" TYPE="text/css">\n' ;
         S1 += '<TITLE>' + 'Its ' + (new Date).hhmmss() + '</TITLE>\n' ;
-        S1 += '</HEAD>\n <BODY>\n' ;
+        S1 += '</HEAD>\n<BODY>\n' ;
 
         var S2 = '<hr>\n <table class="t_socis">' ;
         S2 += '<tr> <th> Nom <th> IP <th> Timestamp </tr>' ;

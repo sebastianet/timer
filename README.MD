@@ -36,6 +36,7 @@
 En el Raspberry (es un Linux) funciona amb
 
  $ node -v   : v 5.12.0
+
  $ python -V : v 2.7.9
 
 
