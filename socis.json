@@ -1,14 +1,16 @@
 [
     {
-        "user": "sebastia altemir",
-        "ip":   "10.139.130.117",
-        "tf":   "638015371",
-        "status": "+"
+        "user":      "sebastia altemir",
+        "ip":        "10.139.130.117",
+        "tf":        "638015371",
+        "status":    "+",
+        "timestamp": " "
     },
     {
-        "user": "jordi buzon",
-        "ip":   "10.139.239.67",
-        "tf":   "610777672",
-        "status": "-"
+        "user":      "jordi buzon",
+        "ip":        "10.139.239.67",
+        "tf":        "610777672",
+        "status":    "+",
+        "timestamp": " "
     }
 ]

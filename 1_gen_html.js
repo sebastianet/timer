@@ -1,5 +1,6 @@
 //
 // This APP generates a HTML page every Timeout.
+// The data is collected using a python "ping" on a list of IPs we read from a configuration file.
 //
 // Test it using 
 //
@@ -29,8 +30,8 @@
 //    linux Raspberry : $ node -v   :        v5.12.0
 //    linux Raspberry : $ python -V : Python 2.7.9
 //
-//    win : C:\sebas\miscosas\node>node -v   :        v4.4.7
-//    win : C:\sebas\miscosas\node>python -V : Python 2.7.11
+//    win : C:\sebas\miscosas\node> node -v   :        v4.4.7
+//    win : C:\sebas\miscosas\node> python -V : Python 2.7.11
 //
 // Versions list :
 //
@@ -39,9 +40,10 @@
 // 1.1.c - llegir socis.json
 // 1.1.d - fer ping() des python
 // 1.1.e - favicon.ico
+// 1.1.f - Bitacora : posar events i llistar des menu
 //
 
-var myVersio     = "v1.1.e" ;
+var myVersio     = "v1.1.f" ;
 
 var express     = require( 'express' ) ;
 var app         = express() ;
@@ -55,21 +57,20 @@ var idxSoci = 0 ;                  // soci amb el que estem treballant ara matei
 
 var python_options = {
     mode: 'text',
-    pythonPath: '/usr/bin/python',     // must be blank in Windows, as we did set PYTHONPATH envir var
+    pythonPath: '/usr/bin/python',     // in Windows, must be blank, as we did set PYTHONPATH envir var
     pythonOptions: ['-u'],
-    scriptPath: '/home/pi/timer',      // must be as "C:/sebas/miscosas/node/timer" in WindowS
+    scriptPath: '/home/pi/timer',      // in Windows, must be as "c:/sebas/miscosas/node/timer"
     args: ['value1', 'value2']
 } ;
 
-var mData = [ ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',   
-              ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
-              ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' ] ;  // lets have 30 elements
+var Bitacora = [ '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a',   
+                 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k' ] ;  // lets have 20 elements
 
 // set some values in global var APP
 
 app.set( 'cfgPort', process.env.PORT || 3001 ) ;
 app.set( 'cfgLapse_Gen_HTML', 180000 ) ; // mili-segons - gen HTML every ... 5 minuts = 300 segons, 3 minuts = 180 seg.
-app.set( 'cfgLapse_Do_Ping', 5000 ) ;    // mili-segons - do Ping every ... 5 seconds
+app.set( 'cfgLapse_Do_Ping', 4000 ) ;    // mili-segons - do Ping every ... 4 seconds
 
 
 // set where do we serve HTML pages from
@@ -77,7 +78,7 @@ app.set( 'cfgLapse_Do_Ping', 5000 ) ;    // mili-segons - do Ping every ... 5 se
     app.use( '/', express.static(__dirname + '/public') ) ; // serve whatever is in the "public" folder at the URL <root>/:filename
 
 
-// implement few own functions
+// ======== ======== ======== ======== implement few own functions
 
 // Date() prototypes - use as 
 // var szOut = (new Date).yyyymmdd() + '-' + (new Date).hhmmss() + ' ' + szIn + '<br>' ;
@@ -114,11 +115,44 @@ function genTimeStamp ( arg ) {
 } ; // genTimeStamp()
 
 
+// Bitacora : save important events and list them on demand.
+
+function Poner_Bitacora ( szIn ) { // save an important event
+
+var szOut = (new Date).yyyymmdd() + '-' + (new Date).hhmmss() + ' ' + szIn ;
+
+    console.log( 'Posar bitacora : ' + szOut ) ; // first, write to console
+    var newLength = Bitacora.unshift( szOut ) ;  // add to the front
+    var last      = Bitacora.pop() ;             // remove from the end
+    return 0 ;
+
+} ; // Poner_Bitacora()
+
+
+function Listar_Bitacora () { // return the last events
+
+//    console.log( '>>> Listar bitacora' ) ;
+
+    var szOut = " " ;
+
+    Bitacora.forEach( function( item, index, array ) {
+//        console.log( index, item ) ;
+        szOut += item + '<br>' ;
+    } ) ;
+
+    return szOut ;
+
+} ; // Listar_Bitacora()
+
+
 // lets implement what to do when the TIMEOUT lapse expires
 
 // (1) ping timeout
 
 function myTimeout_Do_Ping_Function ( arg ) { // ping a un soci
+
+var szNow ; // to get timestamp
+var szLog ; // to write into log and Bitacora
 
     var iPing_IP = dades_socis [ idxSoci ].ip ;
     var szOut = ">>> timeout Ping soci " + idxSoci + "/" + iNumSocis + ". " ;
@@ -129,43 +163,46 @@ function myTimeout_Do_Ping_Function ( arg ) { // ping a un soci
 
     python_options.args[0] = iPing_IP ; // set IP to ping in python params
 
-    PythonShell.run( '2_do_ping.py', python_options, function( err, results ) {
+    PythonShell.run( '2_do_ping.py', python_options, function( err, results ) { // call python code implementing "ping()"
 
         if ( err ) throw err;
-        console.log( '(+) Python results (%j).', results ) ;
-// results is an array consisting of messages collected during execution
+        console.log( '(+) Python results (%j).', results ) ; // results is an array of messages collected during execution
 
 // if "RC 0"  then "on", if "RC KO" then "off"
 
         var ss_OK = "RC 0" ;
-        var idx = results.indexOf( ss_OK ) ; // "-1" means "not found"
+        var idx = results.indexOf( ss_OK ) ; // search meaningful string : "-1" means "not found"
 //        console.log( '(#) PING result (%j).', idx ) ;
 
-        if ( idx > 0 ) { // substring found
+        szNow = (new Date).hhmmss() ; // get timestamp
+        if ( idx > 0 ) { // substring found, meaning IP is ALIVE at this moment
 
-            if ( dades_socis [ idxSoci ].status != '+' ) { // ip comes up
-                console.log( '(#) IP (%s) comes UP. Stamp (%s).', iPing_IP, (new Date).hhmmss() ) ;
+            if ( dades_socis [ idxSoci ].status != '+' ) { // ip was not up => ip comes up right now
+                dades_socis [ idxSoci ].timestamp = szNow ; // set timestamp of the moment ip went up
+                szLog = '(#) IP (' + iPing_IP + ') comes UP. Stamp (' + szNow + ').' ;
+                Poner_Bitacora( szLog ) ;
             } ;
 
             dades_socis [ idxSoci ].status = '+' ; // set IP is UP
 
-        } else {
+        } else { // substring not found, meaning IP is DEAD at this moment
 
-            if ( dades_socis [ idxSoci ].status != '-' ) { // ip comes down right now
-                console.log( '(#) IP (%s) goes DOWN. Stamp (%s).', iPing_IP, (new Date).hhmmss() ) ;
+            if ( dades_socis [ idxSoci ].status != '-' ) { // ip was not down => ip goes down right now
+                dades_socis [ idxSoci ].timestamp = szNow ; // set timestamp of the moment ip went down
+                szLog = '(#) IP (' + iPing_IP + ') goes DOWN. Stamp (' + szNow + ').' ;
+                Poner_Bitacora( szLog ) ;
             } ;
 
             dades_socis [ idxSoci ].status = '-' ; // set IP is DOWN
 
         } ;
 
-    } ) ; // python shell
+        // apuntem al soci seguent
 
+        idxSoci = idxSoci + 1 ;
+        if ( idxSoci >= iNumSocis ) { idxSoci = 0 ; } ;
 
-// apuntem al soci seguent
-
-    idxSoci = idxSoci + 1 ;
-    if ( idxSoci >= iNumSocis ) { idxSoci = 0 ; } ;
+    } ) ; // python shell call
 
 } ; // myTimeout_Do_Ping_Function()
 
@@ -222,7 +259,8 @@ function myTimeout_Gen_HTML_Function ( arg ) { // generar pagina HTML
             } else {
                 szTR = '<tr class="t_soci_aturat">' ;
             } ;
-            S2 += szTR + '<td>' + dades_socis [index].user + '<td>' + dades_socis [index].ip + '<td>' + (new Date).hhmmss() + '</tr>\n' ;
+            S2 += szTR + '<td>' + dades_socis [index].user ;
+            S2 += '<td>' + dades_socis [index].ip + '<td>' + dades_socis [index ].timestamp + '</tr>\n' ;
 
         } ) ; // forEach()
 
@@ -277,10 +315,11 @@ fs.readFile( fitxer_socis, 'utf8', function ( err, dadesJSON ) {
 
     dades_socis.forEach( function ( soci, index ) {
         console.log( "Index " + index + "/" + iNumSocis + " has" ) ;
-        console.log( "\tout.user   \t"   + dades_socis [index].user ) ;
-        console.log( "\tout.ip     \t"   + dades_socis [index].ip ) ;
-        console.log( "\tout.tf     \t"   + dades_socis [index].tf ) ;
-        console.log( "\tout.status \t"   + dades_socis [index].status ) ;
+        console.log( "\tout.user      \t"   + dades_socis [index].user ) ;
+        console.log( "\tout.ip        \t"   + dades_socis [index].ip ) ;
+        console.log( "\tout.tf        \t"   + dades_socis [index].tf ) ;
+        console.log( "\tout.status    \t"   + dades_socis [index].status ) ;
+        console.log( "\tout.timestamp \t"   + dades_socis [index].timestamp ) ;
     } ) ; // forEach()
 
 } ) ; // readFile()
@@ -297,26 +336,36 @@ fs.readFile( fitxer_socis, 'utf8', function ( err, dadesJSON ) {
 
 // implement branches answering the client requests
 
-// (1) if customer asks for a "ping", we send actual date and a link back to main page
+// (1) if customer asks for "events", we send list from Bitacora
 
-app.get( '/ping', function ( req, res ) {
+app.get( '/events', function ( req, res ) {
 
-    var texte = "<hr> Hello from Odin, " + myVersio ;
-    var myTS = genTimeStamp() ;
-    texte += "<p>(" + myTS + ")<p> <hr>" ;
+    console.log( ">>> got /EVENTS." ) ;
 
-    console.log( "got GET. send" + texte ) ;
+    var texte = "<HTML>\n<HEAD>\n" ;
+    texte += '<LINK REL=STYLESHEET HREF="pagina.css" TYPE="text/css">\n' ;
+    texte += '<TITLE>' + 'Events at ' + (new Date).hhmmss() + '</TITLE>\n' ;
+    texte += '</HEAD>\n<BODY>\n' ;
+    texte += "<hr> <h1>Hello from Odin, versio " + myVersio + ". Now is (" + genTimeStamp() + ")</h1>\n<hr>\n" ;
+    texte += '<div class="txt_ajuda">' ;
+    texte += Listar_Bitacora() ;
+    texte += '</div><hr>\n</BODY>\n</HTML>' ;
+
+//     console.log( ">>> Send : " + texte ) ;
 
     res.writeHead( 200, { 'Content-Type': 'text/html' } ) ; // write HTTP headers 
     res.write( texte ) ;
     res.end( ) ;
 
-} ) ; // get '/ping'
+} ) ; // get '/events'
 
 // (2) if customer asks for "root" page, we display the inital page
 
 app.get( '/', function (req, res) {
-    res.sendFile(__dirname + '/public/inici.html');
+
+    console.log( ">>> got /ROOT. Send INICI.HTML " ) ;
+    res.sendFile( __dirname + '/public/inici.html' ) ;
+
 }) ; // get "/"
 
 

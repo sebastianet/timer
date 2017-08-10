@@ -6,11 +6,11 @@
  Aixi, el nostre programa fa :
 
     1er llegeix una llista de socis del fitxer socis.json (nom + ip de moment)
-    2on cada 5 segons fa "ping" a una IP de la llista per saber si es activa
-    3er cada 5 minuts genera un fitxer HTML, anomenat "pagina.html"
+    2on cada 4 segons fa "ping" a una IP de la llista per saber si es activa
+    3er cada 3 minuts genera un fitxer HTML, anomenat "pagina.html"
 
  El client ha de llegir el fitxer "pagina.html" una sola vegada
-     i despres es recarrega automaticament cada 30 segons
+     ja que despres es recarrega automaticament cada 30 segons
 
  Fitxers del directori :
 
@@ -36,7 +36,5 @@
 En el Raspberry (es un Linux) funciona amb
 
  $ node -v   : v 5.12.0
-
  $ python -V : v 2.7.9
-
 
