@@ -10,6 +10,12 @@
 .t_soci_aturat  { background-color: #FFCC99 ; }
 .t_soci_working { background-color: #CCFF99 ; }
 
+.inici_links {
+    background-color: #800000 ;
+    border: 2px solid yellow ;
+    text-align: right ;
+}
+
 html, body {
     margin: 0 ;
     padding: 0 ;

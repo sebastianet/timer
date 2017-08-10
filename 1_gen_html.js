@@ -22,7 +22,12 @@
 //
 // Pendent :
 //
-//    Posar FAVICON.ICO
+//    .
+//
+// Requisits :
+//
+//    nodejs - comprovat amb pi@odin:~/timer $ node -v   : v5.12.0
+//    python - comprovat amb pi@odin:~/timer $ python -V : Python 2.7.9
 //
 // Versions list :
 //
@@ -30,9 +35,10 @@
 // 1.1.b - delete old file, create new one
 // 1.1.c - llegir socis.json
 // 1.1.d - fer ping() des python
+// 1.1.e - favicon.ico
 //
 
-var myVersio     = "v1.1.d" ;
+var myVersio     = "v1.1.e" ;
 
 var express     = require( 'express' ) ;
 var app         = express() ;
@@ -165,18 +171,7 @@ function myTimeout_Do_Ping_Function ( arg ) { // ping a un soci
 
 function myTimeout_Gen_HTML_Function ( arg ) { // generar pagina HTML
 
-// (a) update "mData" structure with some new data, as timestamp or song name
-
-    var szNow = genTimeStamp() ;
-    console.log( ">>> timeout Generar HTML. Stamp {" + szNow + '}' ) ;
-
-// remove item at end
-    var last = mData.pop() ; // remove from the end
-
-// add an item at head
-    var newLength = mData.unshift( szNow ) ; // add to the front
-
-// (b) generate new page "/public/pagina.html" so client gets fresh data
+// generate new page "/public/pagina.html" so client gets fresh data
 
 //   (b1) delete the file we shall create, "pagina.nova"
 //   (b2) create "pagina.nova"
@@ -208,16 +203,13 @@ function myTimeout_Gen_HTML_Function ( arg ) { // generar pagina HTML
         S1 += '<HTML> <HEAD>\n' ;
         S1 += '<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">\n' ;
         S1 += '<META HTTP-EQUIV="Refresh" CONTENT="30;URL=./pagina.html">\n' ;
+        S1 += '<LINK REL="SHORTCUT ICON" HREF="./favicon.ico";>\n' ;
         S1 += '<LINK REL=STYLESHEET HREF="pagina.css" TYPE="text/css">\n' ;
         S1 += '<TITLE>' + 'Its ' + (new Date).hhmmss() + '</TITLE>\n' ;
         S1 += '</HEAD>\n <BODY>\n' ;
 
         var S2 = '<hr>\n <table class="t_socis">' ;
         S2 += '<tr> <th> Nom <th> IP <th> Timestamp </tr>' ;
-
-//        mData.forEach( function( item, index, array ) {
-//            S2 += '<p>' + index + ' | ' + item + '</p>\n' ;
-//        } ) ; // forEach element of mData
 
         var szTR = '.' ;
 
@@ -318,19 +310,10 @@ app.get( '/ping', function ( req, res ) {
 
 } ) ; // get '/ping'
 
-// (2) if customer asks for "root" page, we display the item list
+// (2) if customer asks for "root" page, we display the inital page
 
 app.get( '/', function (req, res) {
-//    res.send( 'Hello World from ROOT !' ) ;
-    var szNew = '<hr>' ;
-    var szOne = '' ;
-    console.log( '+++ got SLASH' ) ;
-    mData.forEach( function( item, index, array ) {
-        console.log( item, index ) ;
-        szOne = '<p>' + index + ' | ' + item + '</p>' ;
-        szNew = szNew + szOne ;
-    } ) ; // forEach element of mData
-    res.send( szNew + '<hr>' ) ;
+    res.sendFile(__dirname + '/public/inici.html');
 }) ; // get "/"
 
 

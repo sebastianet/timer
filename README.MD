@@ -1,28 +1,41 @@
 
  Volem tenir un servidor de pagines web
 
+ En aquesta pagina es veuen totes les IPs dels socis de guifi.net de Torrelles i el seu estat.
+
+ Aixi, el nostre programa fa :
+
     1er llegeix una llista de socis del fitxer socis.json (nom + ip de moment)
-    2on cad 5 segons fa "ping" a una IP per saber si es activa
-    3er cada 5 minuts genera un fitxer HTML pagina.html
+    2on cada 5 segons fa "ping" a una IP de la llista per saber si es activa
+    3er cada 5 minuts genera un fitxer HTML, anomenat "pagina.html"
 
- El client ha de llegir el fitxer HTML una sola vegada
- i despres es recarrega automaticament cada 30 segons
+ El client ha de llegir el fitxer "pagina.html" una sola vegada
+     i despres es recarrega automaticament cada 30 segons
 
- En aquesta pagina web es veuen totes les IPs dels socis de guifi.net de Torrelles
- i el seu estat.
+ Fitxers del directori :
 
+    1_gen_html.js        - codi del programa
+    2_do_ping.py         - codi en python que fa el "ping"
+    5_test_ping.js       - proves de fer anar "2_do_ping.py" des nodejs
+    6_test_json.js       - proves de llegir JSON des un fitxer de texte, config.json
+    config.json          - fitxer de texte amb format JSON
+    .git                 - configuracio del GIT
+    .gitignore           - llista de fitxers que no es guarden al projecte GIT
+    node_modules         - moduls de nodejs que li calen al projecte
+    package.json         - configuracio del software del projecte
+    public               - fitxers HTML que fem servir, CSS, FAVICON, etc
+    README.MD            - descripcio del projecte
+    ru.sh                - shell per engegar el programa en mode "SU"
+    socis.json           - configuracio del programa : llista de socis que tenim i les seves IPs, en format JSON
 
--rw-r--r--  1 pi pi 7205 Aug  9 20:42 1_gen_html.js        - codi del programa
--rwxr--r--  1 pi pi  646 Aug  9 18:55 2_do_ping.py         - codi en python que fa el "ping"
--rw-r--r--  1 pi pi 1582 Aug  9 19:17 5_test_ping.js
--rw-r--r--  1 pi pi  529 Aug  9 20:31 6_test_json.js
--rw-r--r--  1 pi pi  242 Aug  9 20:01 config.json  
-drwxr-xr-x  8 pi pi 4096 Aug  9 20:42 .git
--rw-r--r--  1 pi pi   84 Aug  9 15:37 .gitignore
-drwxr-xr-x 46 pi pi 4096 Aug  9 18:13 node_modules
--rw-r--r--  1 pi pi  493 Aug  9 18:13 package.json         - configuracio del software del projecte
-drwxr-xr-x  2 pi pi 4096 Aug  9 16:35 public
--rw-r--r--  1 pi pi    0 Aug  9 20:43 README.MD            - descripcio del projecte
--rwxr--r--  1 pi pi   20 Aug  9 17:43 ru.sh
--rw-r--r--  1 pi pi  265 Aug  9 20:40 socis.json           - configuracio del programa
+ Requisits :
+
+    nodejs               - ens dona el web server
+    python               - ens permet fer ping()
+
+En el Raspberry (es un Linux) funciona amb
+
+ $ node -v   : v 5.12.0
+ $ python -V : v 2.7.9
+
 
