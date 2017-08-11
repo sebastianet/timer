@@ -58,7 +58,7 @@ var python_options = {
     pythonPath: '/usr/bin/python',     // in Windows, must be blank, as we did set PYTHONPATH envir var
     pythonOptions: ['-u'],
     scriptPath: '/home/pi/timer',                        // in Windows, must be as "c:/sebas/miscosas/node/timer"
-#    scriptPath: '/home/sebas/node_projects/timer',      // in Ubuntu, this is the location of the python file
+//    scriptPath: '/home/sebas/node_projects/timer',      // in Ubuntu, this is the location of the python file
     args: ['value1', 'value2']
 } ;
 
@@ -118,9 +118,9 @@ function genTimeStamp ( arg ) {
 
 function Poner_Bitacora ( szIn ) { // save an important event
 
-var szOut = (new Date).yyyymmdd() + '-' + (new Date).hhmmss() + ' ' + szIn ;
+var szOut = genTimeStamp() + ' ' + szIn ;
 
-    console.log( 'Posar bitacora : ' + szOut ) ; // first, write to console
+    console.log( genTimeStamp() + ' Posar bitacora : ' + szIn ) ; // first, write to console
     var newLength = Bitacora.unshift( szOut ) ;  // add to the front
     var last      = Bitacora.pop() ;             // remove from the end
     return 0 ;
@@ -154,7 +154,7 @@ var szNow ; // to get timestamp
 var szLog ; // to write into log and Bitacora
 
     var iPing_IP = dades_socis [ idxSoci ].ip ;
-    var szOut = genTimeStamp() + ">>> timeout fer Ping. Soci " + idxSoci + "/" + iNumSocis + ". " ;
+    var szOut = genTimeStamp() + " >>> timeout fer Ping. Soci " + idxSoci + "/" + iNumSocis + ". " ;
     szOut += 'IP {' + iPing_IP + '}, ' ;
     szOut += 'nom {' + dades_socis [ idxSoci ].user + '}, ' ;
     szOut += 'q {' + dades_socis [ idxSoci ].status + '}' ;
@@ -167,7 +167,7 @@ var szLog ; // to write into log and Bitacora
     PythonShell.run( '2_do_ping.py', python_options, function( err, results ) { // call python code implementing "ping()"
 
         if ( err ) throw err;
-        console.log( '(+) Python results (%j).', results ) ; // results is an array of messages collected during execution
+        console.log( genTimeStamp() + ' (+) Python results (%j).', results ) ; // results is an array of messages collected during execution
 
 // if "RC 0"  then "on", if "RC KO" then "off"
 
@@ -180,8 +180,11 @@ var szLog ; // to write into log and Bitacora
 
             if ( dades_socis [ idxSoci ].status != '+' ) { // ip was not up => ip comes up right now
                 dades_socis [ idxSoci ].timestamp = szNow ; // set timestamp of the moment ip went up
+                dades_socis [ idxSoci ].count = 0 ;         // set count to 0
                 szLog = szNow + '(#) IP (' + iPing_IP + ') comes UP.' ;
                 Poner_Bitacora( szLog ) ;
+            } else { // ip was up and is up again, so count the event
+                dades_socis [ idxSoci ].count = dades_socis [ idxSoci ].count +1 ;     // count "on" periods
             } ;
 
             dades_socis [ idxSoci ].status = '+' ; // set IP is UP
@@ -190,8 +193,11 @@ var szLog ; // to write into log and Bitacora
 
             if ( dades_socis [ idxSoci ].status != '-' ) { // ip was not down => ip goes down right now
                 dades_socis [ idxSoci ].timestamp = szNow ; // set timestamp of the moment ip went down
-                szLog = '(#) IP (' + iPing_IP + ') goes DOWN. Stamp (' + szNow + ').' ;
+                dades_socis [ idxSoci ].count = 0 ;         // set count to 0
+                szLog = '(#) IP (' + iPing_IP + ') goes DOWN.' ;
                 Poner_Bitacora( szLog ) ;
+            } else { // ip was down and is down again, so count the event
+                dades_socis [ idxSoci ].count = dades_socis [ idxSoci ].count +1 ;     // count "off" periods
             } ;
 
             dades_socis [ idxSoci ].status = '-' ; // set IP is DOWN
@@ -249,8 +255,9 @@ function myTimeout_Gen_HTML_Function ( arg ) { // generar pagina HTML
         S1 += '<TITLE>' + 'Its ' + (new Date).hhmmss() + '</TITLE>\n' ;
         S1 += '</HEAD>\n<BODY>\n' ;
 
-        var S2 = '<hr>\n <table class="t_socis">' ;
-        S2 += '<tr> <th> Nom <th> IP <th> Timestamp </tr>' ;
+        var S2 = '<hr>\n <h1>Estat de les antenes dels nostres socis</h1>\n' ;
+        S2 += '<table class="t_socis">\n' ;
+        S2 += '<tr> <th> id <th> Nom <th> IP <th> Timestamp <th> count</tr>\n' ;
 
         var szTR = '.' ;
 
@@ -261,12 +268,18 @@ function myTimeout_Gen_HTML_Function ( arg ) { // generar pagina HTML
             } else {
                 szTR = '<tr class="t_soci_aturat">' ;
             } ;
-            S2 += szTR + '<td>' + dades_socis [index].user ;
-            S2 += '<td>' + dades_socis [index].ip + '<td>' + dades_socis [index ].timestamp + '</tr>\n' ;
+            S2 += szTR + '<td>' + index + '/' + iNumSocis ;
+            S2 += '<td>' + dades_socis [index].user ;
+            S2 += '<td>' + dades_socis [index].ip ;
+            S2 += '<td>' + dades_socis [index ].timestamp ;
+            S2 += '<td>' + dades_socis [index ].count ;
+            S2 += '</tr>\n' ;
 
         } ) ; // forEach()
 
-        var S3 = '</table> <hr>\n </BODY>\n </HTML>\n' ;
+        var S3 = '</table>\n<hr>\n' ;
+        S3 += '<p>Tornar a la pagina <a href="./inici.html">principal</a>\n<hr>\n' ;
+        S3 += '</BODY>\n</HTML>\n' ;
 
         fs.writeFile( newFN, S1+S2+S3, (err) => {
             if (err) throw err ;
@@ -318,7 +331,8 @@ fs.readFile( fitxer_socis, 'utf8', function ( err, dadesJSON ) {
     dades_socis.forEach( function ( soci, index ) {
 
         dades_socis [index].status    = '+' ; // create new fields ...
-        dades_socis [index].timestamp = ' ' ; // ... that are calculated by program, not initial or constant values
+        dades_socis [index].timestamp = ' ' ; // ... that are calculated by program, 
+        dades_socis [index].count     = 0 ;   // ... not initial or constant values
  
         console.log( "Index " + index + "/" + iNumSocis + " has" ) ;
         console.log( "\tout.user      \t"   + dades_socis [index].user ) ;
@@ -353,10 +367,10 @@ app.get( '/events', function ( req, res ) {
     texte += '<LINK REL=STYLESHEET HREF="pagina.css" TYPE="text/css">\n' ;
     texte += '<TITLE>' + 'Events at ' + genTimeStamp() + '</TITLE>\n' ;
     texte += '</HEAD>\n<BODY>\n' ;
-    texte += "<hr> <h1>Hello from Odin, versio " + myVersio + "</h1>\n<hr>\n" ;
+    texte += "<hr>\n<h1>Darrers events dels nodes, versio " + myVersio + "</h1>\n<hr>\n" ;
     texte += '<div class="txt_ajuda" style="font-family: Lucida Console">' ;
     texte += Listar_Bitacora() ;
-    texte += '</div><hr>\n' ;
+    texte += '</div>\n<hr>\n' ;
     texte += '<p>Tornar a la pagina <a href="./inici.html">principal</a>\n<hr>\n' ;
     texte += '</BODY>\n</HTML>\n' ;
 
