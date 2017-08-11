@@ -33,8 +33,17 @@
     nodejs               - ens dona el web server
     python               - ens permet fer ping()
 
-En el Raspberry (es un Linux) funciona amb
+Comprovat :
 
- $ node -v   : v 5.12.0
- $ python -V : v 2.7.9
+    Opsys : linux Raspberry 
+    $ node -v      :        v5.12.0
+    $ python -V    : Python 2.7.9
+
+    Opsys : linux Ubuntu 14.04 LTS 32-bit
+    $ node -v      :        v8.3.0
+    $ python .V    : Python 2.7.6
+
+    Opsys : Windows Server 2008 64-bit
+    C:\> node -v   :        v4.4.7
+    C:\> python -V : Python 2.7.11
 

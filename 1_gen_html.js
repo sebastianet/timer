@@ -4,10 +4,11 @@
 //
 // Test it using 
 //
+//    http://192.168.1.123:3001/
+//    http://192.168.1.123:3001/pagina.html     auto-reload every 30 seconds
 //    curl http://127.0.0.1:3001
 //    curl http://127.0.0.1:3001/ping
 //    curl http://127.0.0.1:3001/pagina.html
-//    http://192.168.1.123:3001/pagina.html     auto-reload every 30 seconds
 //
 // GIT
 //
@@ -23,17 +24,11 @@
 //
 // Pendent :
 //
-//    .
+//    . enviar correu quan un node caigui i estigui aixi una estoneta
 //
-// Requisits : nodejs i python
+// Requisits : nodejs i python (see README.MD)
 //
-//    linux Raspberry : $ node -v   :        v5.12.0
-//    linux Raspberry : $ python -V : Python 2.7.9
-//
-//    win : C:\sebas\miscosas\node> node -v   :        v4.4.7
-//    win : C:\sebas\miscosas\node> python -V : Python 2.7.11
-//
-// Versions list :
+// Llista de versions :
 //
 // 1.1.a - start code
 // 1.1.b - delete old file, create new one
@@ -42,9 +37,10 @@
 // 1.1.e - favicon.ico
 // 1.1.f - Bitacora : posar events i llistar des menu
 // 1.1.g - minimal cfg file, rest is created
+// 1.1.h - improve ping() return text search
 //
 
-var myVersio     = "v1.1.f" ;
+var myVersio     = "v1.1.h" ;
 
 var express     = require( 'express' ) ;
 var app         = express() ;
@@ -60,7 +56,8 @@ var python_options = {
     mode: 'text',
     pythonPath: '/usr/bin/python',     // in Windows, must be blank, as we did set PYTHONPATH envir var
     pythonOptions: ['-u'],
-    scriptPath: '/home/pi/timer',      // in Windows, must be as "c:/sebas/miscosas/node/timer"
+    scriptPath: '/home/pi/timer',                        // in Windows, must be as "c:/sebas/miscosas/node/timer"
+#    scriptPath: '/home/sebas/node_projects/timer',      // in Ubuntu, this is the location of the python file
     args: ['value1', 'value2']
 } ;
 
@@ -157,7 +154,10 @@ var szLog ; // to write into log and Bitacora
 
     var iPing_IP = dades_socis [ idxSoci ].ip ;
     var szOut = ">>> timeout Ping soci " + idxSoci + "/" + iNumSocis + ". " ;
-    szOut += "Stamp {" + genTimeStamp() + '}, IP {' + iPing_IP + '}, nom {' + dades_socis [ idxSoci ].user + '}' ;
+    szOut += "Stamp {" + genTimeStamp() + '}, ' ;
+    szOut += 'IP {' + iPing_IP + '}, ' ;
+    szOut += 'nom {' + dades_socis [ idxSoci ].user + '}, ' ;
+    szOut += 'q {' + dades_socis [ idxSoci ].status + '}' ;
     console.log( szOut ) ;
 
 // fem ping() amb python
@@ -172,11 +172,11 @@ var szLog ; // to write into log and Bitacora
 // if "RC 0"  then "on", if "RC KO" then "off"
 
         var ss_OK = "RC 0" ;
-        var idx = results.indexOf( ss_OK ) ; // search meaningful string : "-1" means "not found"
-//        console.log( '(#) PING result (%j).', idx ) ;
+        var idx = results[1].indexOf( ss_OK ) ; // search meaningful string : "-1" means "not found"
+//        console.log( '(#) PING result IDX str (%s) in (%s) is (%j).', ss_OK, results[1], idx ) ;
 
         szNow = (new Date).hhmmss() ; // get timestamp
-        if ( idx > 0 ) { // substring found, meaning IP is ALIVE at this moment
+        if ( idx >= 0 ) { // substring found, meaning IP is ALIVE at this moment
 
             if ( dades_socis [ idxSoci ].status != '+' ) { // ip was not up => ip comes up right now
                 dades_socis [ idxSoci ].timestamp = szNow ; // set timestamp of the moment ip went up
@@ -269,7 +269,7 @@ function myTimeout_Gen_HTML_Function ( arg ) { // generar pagina HTML
         var S3 = '</table> <hr>\n </BODY>\n </HTML>\n' ;
 
         fs.writeFile( newFN, S1+S2+S3, (err) => {
-            if (err) throw err;
+            if (err) throw err ;
             console.log( '+++ (b2) file ' + newFN + ' has been saved!' ) ;
 
 // (b3)
@@ -292,7 +292,7 @@ function myTimeout_Gen_HTML_Function ( arg ) { // generar pagina HTML
 //                console.log( '(b4) rename ' + oldFN + ' as ' + newFN ) ;
 
                 fs.rename( oldFN, newFN, (err) => {
-                    if (err) throw err;
+                    if (err) throw err ;
                     console.log( '+++ (b4) renamed complete ' + newFN ) ;
                 });
 

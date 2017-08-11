@@ -1,5 +1,9 @@
 #!/usr/bin/python
 
+# we have to return 2 strings :
+#   1) the IP we are ping-ing
+#   2) the result
+
 import sys
 
 import pyping
@@ -23,6 +27,6 @@ print 'Lets ping (', szDesti, ').'
 response = pyping.ping( szDesti, timeout=900, count=2 )        # -t 900 -c 2
 
 if response.ret_code == 0:
-    print( "RC 0 - Viagra, reachable" )            # 74.125.143.104
+    print( "RC 0 - Viagra, reachable" )          # 74.125.143.104
 else:
     print( "RC KO - Promescent, unreachable" )   # 1.2.3.4
