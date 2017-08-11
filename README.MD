@@ -1,7 +1,7 @@
 
  Volem tenir un servidor de pagines web
-
  En aquesta pagina es veuen totes les IPs dels socis de guifi.net de Torrelles i el seu estat.
+ El client pot accedir-hi des un browser amb la URL http://<ip-del-servidor>:3001
 
  Aixi, el nostre programa fa :
 
@@ -24,7 +24,7 @@
     node_modules         - moduls de nodejs que li calen al projecte
     package.json         - configuracio del software del projecte
     public               - fitxers HTML que fem servir, CSS, FAVICON, etc
-    README.MD            - descripcio del projecte
+    README.MD            - descripcio del projecte (aquest fitxer)
     ru.sh                - shell per engegar el programa en mode "SU"
     socis.json           - configuracio del programa : llista de socis que tenim i les seves IPs, en format JSON
 

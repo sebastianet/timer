@@ -41,6 +41,7 @@
 // 1.1.d - fer ping() des python
 // 1.1.e - favicon.ico
 // 1.1.f - Bitacora : posar events i llistar des menu
+// 1.1.g - minimal cfg file, rest is created
 //
 
 var myVersio     = "v1.1.f" ;
@@ -254,6 +255,7 @@ function myTimeout_Gen_HTML_Function ( arg ) { // generar pagina HTML
         var szTR = '.' ;
 
         dades_socis.forEach( function ( soci, index ) {
+
             if ( dades_socis [index].status == '+' ) {
                 szTR = '<tr class="t_soci_working">' ;
             } else {
@@ -311,15 +313,20 @@ fs.readFile( fitxer_socis, 'utf8', function ( err, dadesJSON ) {
 
     console.dir( "in" + dadesJSON ) ;
     dades_socis = JSON.parse( dadesJSON ) ;
-    iNumSocis = dades_socis.length ; 
+    iNumSocis = dades_socis.length ;        // set var for this run
 
     dades_socis.forEach( function ( soci, index ) {
+
+        dades_socis [index].status    = '+' ; // create new fields ...
+        dades_socis [index].timestamp = ' ' ; // ... that are calculated by program, not initial or constant values
+ 
         console.log( "Index " + index + "/" + iNumSocis + " has" ) ;
         console.log( "\tout.user      \t"   + dades_socis [index].user ) ;
         console.log( "\tout.ip        \t"   + dades_socis [index].ip ) ;
         console.log( "\tout.tf        \t"   + dades_socis [index].tf ) ;
         console.log( "\tout.status    \t"   + dades_socis [index].status ) ;
         console.log( "\tout.timestamp \t"   + dades_socis [index].timestamp ) ;
+
     } ) ; // forEach()
 
 } ) ; // readFile()
@@ -347,7 +354,7 @@ app.get( '/events', function ( req, res ) {
     texte += '<TITLE>' + 'Events at ' + (new Date).hhmmss() + '</TITLE>\n' ;
     texte += '</HEAD>\n<BODY>\n' ;
     texte += "<hr> <h1>Hello from Odin, versio " + myVersio + ". Now is (" + genTimeStamp() + ")</h1>\n<hr>\n" ;
-    texte += '<div class="txt_ajuda">' ;
+    texte += '<div class="txt_ajuda" style="font-family: Lucida Console">' ;
     texte += Listar_Bitacora() ;
     texte += '</div><hr>\n</BODY>\n</HTML>' ;
 
