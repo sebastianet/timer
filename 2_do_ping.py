@@ -23,7 +23,7 @@ idx = 0
 szDesti = '74.125.143.104'
 szDesti = sys.argv[1]                         # in nodejs we code "python_options.args[0] = szIP ;"
 
-print 'Lets ping (', szDesti, ').'
+print 'IP (',szDesti,').'                                      # ret string #1
 response = pyping.ping( szDesti, timeout=900, count=2 )        # -t 900 -c 2
 
 if response.ret_code == 0:

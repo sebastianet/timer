@@ -38,9 +38,10 @@
 // 1.1.f - Bitacora : posar events i llistar des menu
 // 1.1.g - minimal cfg file, rest is created
 // 1.1.h - improve ping() return text search
+// 1.1.i - uniform timestamp in log
 //
 
-var myVersio     = "v1.1.h" ;
+var myVersio     = "v1.1.i" ;
 
 var express     = require( 'express' ) ;
 var app         = express() ;
@@ -153,8 +154,7 @@ var szNow ; // to get timestamp
 var szLog ; // to write into log and Bitacora
 
     var iPing_IP = dades_socis [ idxSoci ].ip ;
-    var szOut = ">>> timeout Ping soci " + idxSoci + "/" + iNumSocis + ". " ;
-    szOut += "Stamp {" + genTimeStamp() + '}, ' ;
+    var szOut = genTimeStamp() + ">>> timeout fer Ping. Soci " + idxSoci + "/" + iNumSocis + ". " ;
     szOut += 'IP {' + iPing_IP + '}, ' ;
     szOut += 'nom {' + dades_socis [ idxSoci ].user + '}, ' ;
     szOut += 'q {' + dades_socis [ idxSoci ].status + '}' ;
@@ -175,12 +175,12 @@ var szLog ; // to write into log and Bitacora
         var idx = results[1].indexOf( ss_OK ) ; // search meaningful string : "-1" means "not found"
 //        console.log( '(#) PING result IDX str (%s) in (%s) is (%j).', ss_OK, results[1], idx ) ;
 
-        szNow = (new Date).hhmmss() ; // get timestamp
+        szNow = genTimeStamp() ; // get timestamp
         if ( idx >= 0 ) { // substring found, meaning IP is ALIVE at this moment
 
             if ( dades_socis [ idxSoci ].status != '+' ) { // ip was not up => ip comes up right now
                 dades_socis [ idxSoci ].timestamp = szNow ; // set timestamp of the moment ip went up
-                szLog = '(#) IP (' + iPing_IP + ') comes UP. Stamp (' + szNow + ').' ;
+                szLog = szNow + '(#) IP (' + iPing_IP + ') comes UP.' ;
                 Poner_Bitacora( szLog ) ;
             } ;
 
@@ -351,12 +351,14 @@ app.get( '/events', function ( req, res ) {
 
     var texte = "<HTML>\n<HEAD>\n" ;
     texte += '<LINK REL=STYLESHEET HREF="pagina.css" TYPE="text/css">\n' ;
-    texte += '<TITLE>' + 'Events at ' + (new Date).hhmmss() + '</TITLE>\n' ;
+    texte += '<TITLE>' + 'Events at ' + genTimeStamp() + '</TITLE>\n' ;
     texte += '</HEAD>\n<BODY>\n' ;
-    texte += "<hr> <h1>Hello from Odin, versio " + myVersio + ". Now is (" + genTimeStamp() + ")</h1>\n<hr>\n" ;
+    texte += "<hr> <h1>Hello from Odin, versio " + myVersio + "</h1>\n<hr>\n" ;
     texte += '<div class="txt_ajuda" style="font-family: Lucida Console">' ;
     texte += Listar_Bitacora() ;
-    texte += '</div><hr>\n</BODY>\n</HTML>' ;
+    texte += '</div><hr>\n' ;
+    texte += '<p>Tornar a la pagina <a href="./inici.html">principal</a>\n<hr>\n' ;
+    texte += '</BODY>\n</HTML>\n' ;
 
 //     console.log( ">>> Send : " + texte ) ;
 
