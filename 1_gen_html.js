@@ -39,9 +39,10 @@
 // 1.1.g - minimal cfg file, rest is created
 // 1.1.h - improve ping() return text search
 // 1.1.i - uniform timestamp in log
+// 1.1.j - mConsole() controla la sortida a log
 //
 
-var myVersio     = "v1.1.i" ;
+var myVersio     = "v1.1.j" ;
 
 var express     = require( 'express' ) ;
 var app         = express() ;
@@ -52,6 +53,7 @@ var fitxer_socis = "socis.json" ;  // configuracio de socis i IPs
 var iNumSocis ;                    // numero actual de socis
 var dades_socis ;                  // guardem les dades 
 var idxSoci = 0 ;                  // soci amb el que estem treballant ara mateix
+var Detalls = 0 ;                  // control de la ttrassa que genereM
 
 var python_options = {
     mode: 'text',
@@ -65,11 +67,12 @@ var python_options = {
 var Bitacora = [ '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a',   
                  'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k' ] ;  // lets have 20 elements
 
+
 // set some values in global var APP
 
-app.set( 'cfgPort', process.env.PORT || 3001 ) ;
-app.set( 'cfgLapse_Gen_HTML', 180000 ) ; // mili-segons - gen HTML every ... 5 minuts = 300 segons, 3 minuts = 180 seg.
-app.set( 'cfgLapse_Do_Ping', 4000 ) ;    // mili-segons - do Ping every ... 4 seconds
+    app.set( 'cfgPort', process.env.PORT || 3001 ) ;
+    app.set( 'cfgLapse_Gen_HTML', 180000 ) ; // mili-segons - gen HTML every ... 5 minuts = 300 segons, 3 minuts = 180 seg.
+    app.set( 'cfgLapse_Do_Ping', 4000 ) ;    // mili-segons - do Ping every ... 4 seconds
 
 
 // set where do we serve HTML pages from
@@ -77,7 +80,14 @@ app.set( 'cfgLapse_Do_Ping', 4000 ) ;    // mili-segons - do Ping every ... 4 se
     app.use( '/', express.static(__dirname + '/public') ) ; // serve whatever is in the "public" folder at the URL <root>/:filename
 
 
-// ======== ======== ======== ======== implement few own functions
+// implement few own functions
+
+function mConsole ( szIn ) {
+    if ( Detalls == 1 ) {
+        console.log( szIn ) ;
+    } ;
+
+} ; // mConsole()
 
 // Date() prototypes - use as 
 // var szOut = (new Date).yyyymmdd() + '-' + (new Date).hhmmss() + ' ' + szIn + '<br>' ;
@@ -120,7 +130,7 @@ function Poner_Bitacora ( szIn ) { // save an important event
 
 var szOut = genTimeStamp() + ' ' + szIn ;
 
-    console.log( genTimeStamp() + ' Posar bitacora : ' + szIn ) ; // first, write to console
+    console.log( genTimeStamp() + ' (###) Posar bitacora : ' + szIn ) ; // first, write to console
     var newLength = Bitacora.unshift( szOut ) ;  // add to the front
     var last      = Bitacora.pop() ;             // remove from the end
     return 0 ;
@@ -158,7 +168,7 @@ var szLog ; // to write into log and Bitacora
     szOut += 'IP {' + iPing_IP + '}, ' ;
     szOut += 'nom {' + dades_socis [ idxSoci ].user + '}, ' ;
     szOut += 'q {' + dades_socis [ idxSoci ].status + '}' ;
-    console.log( szOut ) ;
+    mConsole( szOut ) ;
 
 // fem ping() amb python
 
@@ -181,7 +191,7 @@ var szLog ; // to write into log and Bitacora
             if ( dades_socis [ idxSoci ].status != '+' ) { // ip was not up => ip comes up right now
                 dades_socis [ idxSoci ].timestamp = szNow ; // set timestamp of the moment ip went up
                 dades_socis [ idxSoci ].count = 0 ;         // set count to 0
-                szLog = szNow + '(#) IP (' + iPing_IP + ') comes UP.' ;
+                szLog = szNow + 'IP (' + iPing_IP + ') comes UP.' ;
                 Poner_Bitacora( szLog ) ;
             } else { // ip was up and is up again, so count the event
                 dades_socis [ idxSoci ].count = dades_socis [ idxSoci ].count +1 ;     // count "on" periods
@@ -194,7 +204,7 @@ var szLog ; // to write into log and Bitacora
             if ( dades_socis [ idxSoci ].status != '-' ) { // ip was not down => ip goes down right now
                 dades_socis [ idxSoci ].timestamp = szNow ; // set timestamp of the moment ip went down
                 dades_socis [ idxSoci ].count = 0 ;         // set count to 0
-                szLog = '(#) IP (' + iPing_IP + ') goes DOWN.' ;
+                szLog = 'IP (' + iPing_IP + ') goes DOWN.' ;
                 Poner_Bitacora( szLog ) ;
             } else { // ip was down and is down again, so count the event
                 dades_socis [ idxSoci ].count = dades_socis [ idxSoci ].count +1 ;     // count "off" periods
@@ -220,6 +230,9 @@ function myTimeout_Gen_HTML_Function ( arg ) { // generar pagina HTML
 
 // generate new page "/public/pagina.html" so client gets fresh data
 
+    var szOut = genTimeStamp() + " >>> timeout generar PAGINA.HTML" ;
+    console.log( szOut ) ;
+
 //   (b1) delete the file we shall create, "pagina.nova"
 //   (b2) create "pagina.nova"
 //   (b3) delete old "pagina.html"
@@ -228,23 +241,24 @@ function myTimeout_Gen_HTML_Function ( arg ) { // generar pagina HTML
 // (b1) 
 
     var newFN = './public/pagina.nova' ;
-//    console.log( '(b1) delete ' + newFN ) ;
+    mConsole( '(b1) delete ' + newFN ) ;
 
     fs.unlink( newFN, (err) => {
+
         if (err) {
             if ( err.code === 'ENOENT' ) {
-                console.error( '--- (b1) file '+ newFN +' does not exist' ) ;
+                mConsole( '--- (b1) file '+ newFN +' does not exist' ) ;
             } else {
                 throw err ; // fatal error : stop
             } ;
         } else {
-            console.log( '+++ (b1) successfully deleted ' + newFN ) ;
+            mConsole( '+++ (b1) successfully deleted ' + newFN ) ;
         } ;
 
 // (b2)
 
         var newFN = './public/pagina.nova' ;
-//        console.log( '(b2) create ' + newFN ) ;
+        mConsole( '(b2) create ' + newFN ) ;
 
         var S1 = '<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/html40/loose.dtd">\n' ;
         S1 += '<HTML>\n<HEAD>\n' ;
@@ -252,7 +266,7 @@ function myTimeout_Gen_HTML_Function ( arg ) { // generar pagina HTML
         S1 += '<META HTTP-EQUIV="Refresh" CONTENT="30;URL=./pagina.html">\n' ;
         S1 += '<LINK REL="SHORTCUT ICON" HREF="./favicon.ico";>\n' ;
         S1 += '<LINK REL=STYLESHEET HREF="pagina.css" TYPE="text/css">\n' ;
-        S1 += '<TITLE>' + 'Its ' + (new Date).hhmmss() + '</TITLE>\n' ;
+        S1 += '<TITLE>' + 'Qsocis at ' + (new Date).hhmmss() + '</TITLE>\n' ;
         S1 += '</HEAD>\n<BODY>\n' ;
 
         var S2 = '<hr>\n <h1>Estat de les antenes dels nostres socis</h1>\n' ;
@@ -282,13 +296,15 @@ function myTimeout_Gen_HTML_Function ( arg ) { // generar pagina HTML
         S3 += '</BODY>\n</HTML>\n' ;
 
         fs.writeFile( newFN, S1+S2+S3, (err) => {
+
             if (err) throw err ;
-            console.log( '+++ (b2) file ' + newFN + ' has been saved!' ) ;
+            mConsole( '+++ (b2) file ' + newFN + ' has been saved!' ) ;
 
 // (b3)
             var oldFN = './public/pagina.html' ;
-//            console.log( '(b3) delete ' + oldFN ) ;
+            mConsole( '(b3) delete ' + oldFN ) ;
             fs.unlink( oldFN, (err) => {
+
                 if (err) {
                     if ( err.code === 'ENOENT' ) {
                         console.error( '--- (b3) file ' + oldFN + ' does not exist' ) ;
@@ -296,18 +312,19 @@ function myTimeout_Gen_HTML_Function ( arg ) { // generar pagina HTML
                         throw err ; // fatal error : stop
                     } ;
                 } else {
-                    console.log( '+++ (b3) successfully deleted ' + oldFN ) ;
+                    mConsole( '+++ (b3) successfully deleted ' + oldFN ) ;
                 } ;
 
 // (b4)
                 var newFN = './public/pagina.html' ;
                 var oldFN = './public/pagina.nova' ;
-//                console.log( '(b4) rename ' + oldFN + ' as ' + newFN ) ;
+                mConsole( '(b4) rename ' + oldFN + ' as ' + newFN ) ;
 
                 fs.rename( oldFN, newFN, (err) => {
+
                     if (err) throw err ;
-                    console.log( '+++ (b4) renamed complete ' + newFN ) ;
-                });
+                    mConsole( '+++ (b4) renamed complete ' + newFN ) ;
+                } ) ; // rename()
 
             } ) ; // synch delete "pagina.html"
 

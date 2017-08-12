@@ -6,6 +6,5 @@ client/tests
 tests
 scratch
 *.log
-socis.json.save
 oldies
 /public/pagina.html
