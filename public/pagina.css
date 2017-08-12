@@ -5,7 +5,9 @@
 }
 .t_socis th {
     background-color: #C0C0C0 ;
-    color : blue ;
+}
+.t_socis td {
+    padding-left: 10px ;
 }
 .t_soci_aturat  { background-color: #FFCC99 ; }
 .t_soci_working { background-color: #CCFF99 ; }
@@ -50,7 +52,7 @@ body {
     font-size: 14px ;
     font-family: Verdana, Arial, Courier, sans-serif ;
     border: 1px solid yellow ;
-    color: blue ;
+    color: black ;
     background-color: #F0F0F0 ;
     margin: 1px ;
 }

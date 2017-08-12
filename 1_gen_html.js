@@ -189,10 +189,13 @@ var szLog ; // to write into log and Bitacora
         if ( idx >= 0 ) { // substring found, meaning IP is ALIVE at this moment
 
             if ( dades_socis [ idxSoci ].status != '+' ) { // ip was not up => ip comes up right now
+
                 dades_socis [ idxSoci ].timestamp = szNow ; // set timestamp of the moment ip went up
                 dades_socis [ idxSoci ].count = 0 ;         // set count to 0
-                szLog = szNow + 'IP (' + iPing_IP + ') comes UP.' ;
+
+                szLog = '+++  UP  +++ ip (' + iPing_IP + ') soci (' + dades_socis [ idxSoci ].user + ').' ;
                 Poner_Bitacora( szLog ) ;
+
             } else { // ip was up and is up again, so count the event
                 dades_socis [ idxSoci ].count = dades_socis [ idxSoci ].count +1 ;     // count "on" periods
             } ;
@@ -202,10 +205,13 @@ var szLog ; // to write into log and Bitacora
         } else { // substring not found, meaning IP is DEAD at this moment
 
             if ( dades_socis [ idxSoci ].status != '-' ) { // ip was not down => ip goes down right now
+
                 dades_socis [ idxSoci ].timestamp = szNow ; // set timestamp of the moment ip went down
                 dades_socis [ idxSoci ].count = 0 ;         // set count to 0
-                szLog = 'IP (' + iPing_IP + ') soci (' + dades_socis [ idxSoci ].user + ') goes DOWN.' ;
+
+                szLog = '--- DOWN --- ip (' + iPing_IP + ') soci (' + dades_socis [ idxSoci ].user + ').' ;
                 Poner_Bitacora( szLog ) ;
+
             } else { // ip was down and is down again, so count the event
                 dades_socis [ idxSoci ].count = dades_socis [ idxSoci ].count +1 ;     // count "off" periods
             } ;
@@ -269,7 +275,7 @@ function myTimeout_Gen_HTML_Function ( arg ) { // generar pagina HTML
         S1 += '<TITLE>' + 'Qsocis at ' + (new Date).hhmmss() + '</TITLE>\n' ;
         S1 += '</HEAD>\n<BODY>\n' ;
 
-        var S2 = '<hr>\n <h1>Estat de les antenes dels nostres socis</h1>\n' ;
+        var S2 = '<hr>\n <h1>Estat de les antenes dels nostres socis @ ' + genTimeStamp() + '</h1>\n' ;
         S2 += '<table class="t_socis">\n' ;
         S2 += '<tr> <th> id <th> Nom <th> IP <th> Timestamp <th> count</tr>\n' ;
 
