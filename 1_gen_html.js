@@ -204,7 +204,7 @@ var szLog ; // to write into log and Bitacora
             if ( dades_socis [ idxSoci ].status != '-' ) { // ip was not down => ip goes down right now
                 dades_socis [ idxSoci ].timestamp = szNow ; // set timestamp of the moment ip went down
                 dades_socis [ idxSoci ].count = 0 ;         // set count to 0
-                szLog = 'IP (' + iPing_IP + ') goes DOWN.' ;
+                szLog = 'IP (' + iPing_IP + ') soci (' + dades_socis [ idxSoci ].user + ') goes DOWN.' ;
                 Poner_Bitacora( szLog ) ;
             } else { // ip was down and is down again, so count the event
                 dades_socis [ idxSoci ].count = dades_socis [ idxSoci ].count +1 ;     // count "off" periods
@@ -385,7 +385,8 @@ app.get( '/events', function ( req, res ) {
     texte += '<TITLE>' + 'Events at ' + genTimeStamp() + '</TITLE>\n' ;
     texte += '</HEAD>\n<BODY>\n' ;
     texte += "<hr>\n<h1>Darrers events dels nodes, versio " + myVersio + "</h1>\n<hr>\n" ;
-    texte += '<div class="txt_ajuda" style="font-family: Lucida Console">' ;
+//    texte += '<div class="txt_ajuda" style="font-family: Lucida Console">' ;
+    texte += '<div class="txt_ajuda" style="font-family: Courier New">' ;
     texte += Listar_Bitacora() ;
     texte += '</div>\n<hr>\n' ;
     texte += '<p>Tornar a la pagina <a href="./inici.html">principal</a>\n<hr>\n' ;
