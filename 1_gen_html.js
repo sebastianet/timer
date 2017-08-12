@@ -193,7 +193,7 @@ var szLog ; // to write into log and Bitacora
                 dades_socis [ idxSoci ].timestamp = szNow ; // set timestamp of the moment ip went up
                 dades_socis [ idxSoci ].count = 0 ;         // set count to 0
 
-                szLog = '+++  UP  +++ ip (' + iPing_IP + ') soci (' + dades_socis [ idxSoci ].user + ').' ;
+                szLog = '+++ . UP . +++ ip (' + iPing_IP + ') soci (' + dades_socis [ idxSoci ].user + ').' ;
                 Poner_Bitacora( szLog ) ;
 
             } else { // ip was up and is up again, so count the event
@@ -277,7 +277,7 @@ function myTimeout_Gen_HTML_Function ( arg ) { // generar pagina HTML
 
         var S2 = '<hr>\n <h1>Estat de les antenes dels nostres socis @ ' + genTimeStamp() + '</h1>\n' ;
         S2 += '<table class="t_socis">\n' ;
-        S2 += '<tr> <th> id <th> Nom <th> IP <th> Timestamp <th> count</tr>\n' ;
+        S2 += '<tr> <th> id <th> Nom <th> IP <th> Darrer canvi <th> count</tr>\n' ;
 
         var szTR = '.' ;
 
@@ -390,7 +390,7 @@ app.get( '/events', function ( req, res ) {
     texte += '<LINK REL=STYLESHEET HREF="pagina.css" TYPE="text/css">\n' ;
     texte += '<TITLE>' + 'Events at ' + genTimeStamp() + '</TITLE>\n' ;
     texte += '</HEAD>\n<BODY>\n' ;
-    texte += "<hr>\n<h1>Darrers events dels nodes, versio " + myVersio + "</h1>\n<hr>\n" ;
+    texte += "<hr>\n<h1>Darrers events dels nodes, versio " + myVersio + " (last event on top)</h1>\n<hr>\n" ;
 //    texte += '<div class="txt_ajuda" style="font-family: Lucida Console">' ;
     texte += '<div class="txt_ajuda" style="font-family: Courier New">' ;
     texte += Listar_Bitacora() ;
