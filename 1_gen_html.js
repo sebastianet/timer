@@ -299,7 +299,7 @@ function myTimeout_Gen_HTML_Function ( arg ) { // generar pagina HTML
 
         var S3 = '</table>\n<hr>\n' ;
         S3 += '<p>Tornar a la pagina <a href="./inici.html">principal</a>\n<hr>\n' ;
-        S3 += '</BODY>\n</HTML>\n' ;
+        S3 += '</BODY>\n</HTML>\n' ; // end of PAGINA.HTML
 
         fs.writeFile( newFN, S1+S2+S3, (err) => {
 
@@ -395,8 +395,9 @@ app.get( '/events', function ( req, res ) {
     texte += '<div class="txt_ajuda" style="font-family: Courier New">' ;
     texte += Listar_Bitacora() ;
     texte += '</div>\n<hr>\n' ;
-    texte += '<p>Tornar a la pagina <a href="./inici.html">principal</a>\n<hr>\n' ;
-    texte += '</BODY>\n</HTML>\n' ;
+    texte += '<p>Tornar a la pagina <a href="./inici.html">principal</a>' ;
+    texte += '| <a href="./pagina.html">estat antenes</a>\n<hr>\n' ;
+    texte += '</BODY>\n</HTML>\n' ; // end of EVENTS.HTML
 
 //     console.log( ">>> Send : " + texte ) ;
 
