@@ -193,7 +193,7 @@ var szLog ; // to write into log and Bitacora
                 dades_socis [ idxSoci ].timestamp = szNow ; // set timestamp of the moment ip went up
                 dades_socis [ idxSoci ].count = 0 ;         // set count to 0
 
-                szLog = '+++ . UP . +++ ip (' + iPing_IP + ') soci (' + dades_socis [ idxSoci ].user + ').' ;
+                szLog = '+++  UP  +++ ip (' + iPing_IP + ') soci (' + dades_socis [ idxSoci ].user + ').' ;
                 Poner_Bitacora( szLog ) ;
 
             } else { // ip was up and is up again, so count the event
