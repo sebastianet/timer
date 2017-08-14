@@ -275,7 +275,7 @@ function myTimeout_Gen_HTML_Function ( arg ) { // generar pagina HTML
         S1 += '<TITLE>' + 'Qsocis at ' + (new Date).hhmmss() + '</TITLE>\n' ;
         S1 += '</HEAD>\n<BODY>\n' ;
 
-        var S2 = '<hr>\n <h1>Estat de les antenes dels nostres socis @ ' + genTimeStamp() + '</h1>\n' ;
+        var S2 = '<hr>\n <h1>Estat de les antenes @ ' + genTimeStamp() + '</h1>\n' ;
         S2 += '<table class="t_socis">\n' ;
         S2 += '<tr> <th> id <th> Nom <th> IP <th> Darrer canvi <th> count</tr>\n' ;
 
@@ -378,6 +378,12 @@ fs.readFile( fitxer_socis, 'utf8', function ( err, dadesJSON ) {
     setInterval( myTimeout_Do_Ping_Function, app.get( 'cfgLapse_Do_Ping' ) ) ;   //
 
 
+// Write an initial message into console.
+	app.set( 'appHostname', require('os').hostname() ) ;
+	console.log( "+++ +++ +++ +++ APP Timer starts. Versio[%s], HN[%s], TimeStamp[%s].", myVersio, app.get('appHostname'), genTimeStamp() ) ;
+
+
+
 // implement branches answering the client requests
 
 // (1) if customer asks for "events", we send list from Bitacora
@@ -390,13 +396,15 @@ app.get( '/events', function ( req, res ) {
     texte += '<LINK REL=STYLESHEET HREF="pagina.css" TYPE="text/css">\n' ;
     texte += '<TITLE>' + 'Events at ' + genTimeStamp() + '</TITLE>\n' ;
     texte += '</HEAD>\n<BODY>\n' ;
-    texte += "<hr>\n<h1>Darrers events dels nodes, versio " + myVersio + " (last event on top)</h1>\n<hr>\n" ;
+    texte += "<hr>\n<h1>Darrers events dels nodes (last event on top)</h1>\n<hr>\n" ;
 //    texte += '<div class="txt_ajuda" style="font-family: Lucida Console">' ;
     texte += '<div class="txt_ajuda" style="font-family: Courier New">' ;
     texte += Listar_Bitacora() ;
     texte += '</div>\n<hr>\n' ;
-    texte += '<p>Tornar a la pagina <a href="./inici.html">principal</a>' ;
-    texte += '| <a href="./pagina.html">estat antenes</a>\n<hr>\n' ;
+    texte += '<table class="t_peu"><tr>\n' ;
+    texte += '<td>Tornar a la pagina <a href="./inici.html">principal</a> | <a href="./pagina.html">estat antenes</a>\n' ;
+    texte += '<td>Versio [' + myVersio + '] at host {' + app.get('appHostname') + '}.\n' ;
+    texte += '</table><hr>\n' ;
     texte += '</BODY>\n</HTML>\n' ; // end of EVENTS.HTML
 
 //     console.log( ">>> Send : " + texte ) ;
