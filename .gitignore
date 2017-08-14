@@ -7,4 +7,4 @@ tests
 scratch
 *.log
 oldies
-/public/pagina.html
+public/pagina.html

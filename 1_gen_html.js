@@ -298,7 +298,8 @@ function myTimeout_Gen_HTML_Function ( arg ) { // generar pagina HTML
         } ) ; // forEach()
 
         var S3 = '</table>\n<hr>\n' ;
-        S3 += '<p>Tornar a la pagina <a href="./inici.html">principal</a>\n<hr>\n' ;
+        S3 += '<p>Tornar a la pagina <a href="./inici.html">principal</a> | <a href="./events">events</a>\n' ;
+        S3 += '<hr>\n' ;
         S3 += '</BODY>\n</HTML>\n' ; // end of PAGINA.HTML
 
         fs.writeFile( newFN, S1+S2+S3, (err) => {
