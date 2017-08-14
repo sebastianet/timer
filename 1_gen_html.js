@@ -419,7 +419,7 @@ app.get( '/events', function ( req, res ) {
 
 app.get( '/', function (req, res) {
 
-    console.log( ">>> got /ROOT. Send INICI.HTML " ) ;
+    console.log( ">>> got /, root. Send INICI.HTML " ) ;
     res.sendFile( __dirname + '/public/inici.html' ) ;
 
 }) ; // get "/"
