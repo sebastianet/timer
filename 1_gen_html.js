@@ -277,7 +277,7 @@ function myTimeout_Gen_HTML_Function ( arg ) { // generar pagina HTML
 
         var S2 = '<hr>\n <h1>Estat de les antenes @ ' + genTimeStamp() + '</h1>\n' ;
         S2 += '<table class="t_socis">\n' ;
-        S2 += '<tr> <th> id <th> Nom <th> IP <th> Darrer canvi <th> count</tr>\n' ;
+        S2 += '<tr> <th> id <th> Nom <th> IP <th> Darrer canvi <th> Comptador</tr>\n' ;
 
         var szTR = '.' ;
 
