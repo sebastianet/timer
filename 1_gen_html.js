@@ -40,9 +40,10 @@
 // 1.1.h - improve ping() return text search
 // 1.1.i - uniform timestamp in log
 // 1.1.j - mConsole() controla la sortida a log
+// 1.1.k - comptar antenes on/off i mostrar
 //
 
-var myVersio     = "v1.1.j" ;
+var myVersio     = "v1.1.k" ;
 
 var express     = require( 'express' ) ;
 var app         = express() ;
@@ -275,33 +276,38 @@ function myTimeout_Gen_HTML_Function ( arg ) { // generar pagina HTML
         S1 += '<TITLE>' + 'Qsocis at ' + (new Date).hhmmss() + '</TITLE>\n' ;
         S1 += '</HEAD>\n<BODY>\n' ;
 
-        var S2 = '<hr>\n <h1>Estat de les antenes @ ' + genTimeStamp() + '</h1>\n' ;
-        S2 += '<table class="t_socis">\n' ;
-        S2 += '<tr> <th> id <th> Nom <th> IP <th> Darrer canvi <th> Comptador</tr>\n' ;
-
         var szTR = '.' ;
+        var S3 = '' ;
+        var nWorking = 0 ;
+        var nAturat = 0 ;
 
         dades_socis.forEach( function ( soci, index ) {
 
             if ( dades_socis [index].status == '+' ) {
                 szTR = '<tr class="t_soci_working">' ;
+                nWorking += 1 ;
             } else {
                 szTR = '<tr class="t_soci_aturat">' ;
+                nAturat += 1 ;
             } ;
-            S2 += szTR + '<td>' + index + '/' + iNumSocis ;
-            S2 += '<td>' + dades_socis [index].user ;
-            S2 += '<td>' + dades_socis [index].ip ;
-            S2 += '<td>' + dades_socis [index ].timestamp ;
-            S2 += '<td>' + dades_socis [index ].count ;
-            S2 += '</tr>\n' ;
+            S3 += szTR + '<td>' + index + '/' + iNumSocis ;
+            S3 += '<td>' + dades_socis [index].user ;
+            S3 += '<td>' + dades_socis [index].ip ;
+            S3 += '<td>' + dades_socis [index ].timestamp ;
+            S3 += '<td>' + dades_socis [index ].count ;
+            S3 += '</tr>\n' ;
 
         } ) ; // forEach()
 
-        var S3 = '</table>\n<hr>\n' ;
-        S3 += '<p>Tornar a la pagina <a href="./inici.html">principal</a> | <a href="./events">events</a>\n' ;
-        S3 += '<hr>\n</BODY>\n</HTML>\n' ; // end of PAGINA.HTML
+        var S2 = '<hr>\n <h1>Estat de les antenes @ ' + genTimeStamp() + ' : ' + nWorking + ' on, ' + nAturat + ' off.</h1>\n' ;
+        S2 += '<table class="t_socis">\n' ;
+        S2 += '<tr> <th> id <th> Nom <th> IP <th> Darrer canvi <th> Comptador</tr>\n' ;
 
-        fs.writeFile( newFN, S1+S2+S3, (err) => {
+        var S4 = '</table>\n<hr>\n' ;
+        S4 += '<p>Tornar a la pagina <a href="./inici.html">principal</a> | <a href="./events">events</a>\n' ;
+        S4 += '<hr>\n</BODY>\n</HTML>\n' ; // end of PAGINA.HTML
+
+        fs.writeFile( newFN, S1+S2+S3+S4, (err) => {
 
             if (err) throw err ;
             mConsole( '+++ (b2) file ' + newFN + ' has been saved!' ) ;
