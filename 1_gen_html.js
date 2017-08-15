@@ -15,6 +15,7 @@
 //    https://github.com/sebastianet
 //    git commit -am "descripcio"
 //    git push -u origin master
+//    git pull
 //
 // URLs :
 //
