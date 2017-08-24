@@ -42,9 +42,10 @@
 // 1.1.i - uniform timestamp in log
 // 1.1.j - mConsole() controla la sortida a log
 // 1.1.k - comptar antenes on/off i mostrar
+// 1.1.l - camp "lnk" al fitxer de socis
 //
 
-var myVersio     = "v1.1.k" ;
+var myVersio     = "v1.1.l" ;
 
 var express     = require( 'express' ) ;
 var app         = express() ;
@@ -294,6 +295,7 @@ function myTimeout_Gen_HTML_Function ( arg ) { // generar pagina HTML
             S3 += szTR + '<td>' + index + '/' + iNumSocis ;
             S3 += '<td>' + dades_socis [index].user ;
             S3 += '<td>' + dades_socis [index].ip ;
+            S3 += '<td>' + soci.lnk ;
             S3 += '<td>' + dades_socis [index ].timestamp ;
             S3 += '<td>' + dades_socis [index ].count ;
             S3 += '</tr>\n' ;
@@ -302,7 +304,7 @@ function myTimeout_Gen_HTML_Function ( arg ) { // generar pagina HTML
 
         var S2 = '<hr>\n <h1>Estat de les antenes @ ' + genTimeStamp() + ' : [' + nWorking + ' on, ' + nAturat + ' off].</h1>\n' ;
         S2 += '<table class="t_socis">\n' ;
-        S2 += '<tr> <th> id <th> Nom <th> IP <th> Darrer canvi <th> Comptador</tr>\n' ;
+        S2 += '<tr> <th> id <th> Nom <th> IP <th> Link <th> Darrer canvi <th> Comptador</tr>\n' ;
 
         var S4 = '</table>\n<hr>\n' ;
         S4 += '<p>Tornar a la pagina <a href="./inici.html">principal</a> | <a href="./events">events</a>\n' ;
@@ -367,7 +369,7 @@ fs.readFile( fitxer_socis, 'utf8', function ( err, dadesJSON ) {
         console.log( "Index " + index + "/" + iNumSocis + " has" ) ;
         console.log( "\tout.user      \t"   + dades_socis [index].user ) ;
         console.log( "\tout.ip        \t"   + dades_socis [index].ip ) ;
-        console.log( "\tout.tf        \t"   + dades_socis [index].tf ) ;
+        console.log( "\tout.lnk       \t"   + dades_socis [index].lnk ) ;
         console.log( "\tout.status    \t"   + dades_socis [index].status ) ;
         console.log( "\tout.timestamp \t"   + dades_socis [index].timestamp ) ;
 
