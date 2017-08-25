@@ -43,9 +43,10 @@
 // 1.1.j - mConsole() controla la sortida a log
 // 1.1.k - comptar antenes on/off i mostrar
 // 1.1.l - camp "lnk" al fitxer de socis
+// 1.1.m - manage "Division by zero" in python
 //
 
-var myVersio     = "v1.1.l" ;
+var myVersio     = "v1.1.m" ;
 
 var express     = require( 'express' ) ;
 var app         = express() ;
@@ -179,7 +180,16 @@ var szLog ; // to write into log and Bitacora
 
     PythonShell.run( '2_do_ping.py', python_options, function( err, results ) { // call python code implementing "ping()"
 
-        if ( err ) throw err;
+        if ( err ) {
+            if ( err.code === 'ZeroDivisionError' ) { // accept this error
+                results[1] = '-' ;
+            } else { 
+                throw err ; // fatal error : stop
+            }
+        } ;
+        
+//        if ( err ) throw err;
+
         console.log( genTimeStamp() + ' (+) Python results (%j).', results ) ; // results is an array of messages collected during execution
 
 // if "RC 0"  then "on", if "RC KO" then "off"
