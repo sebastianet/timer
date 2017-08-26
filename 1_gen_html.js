@@ -22,6 +22,7 @@
 //    https://github.com/sebastianet/wCDT/blob/master/my_server.js
 //    https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array
 //    https://nodejs.org/api/fs.html#fs_file_system
+//    https://github.com/extrabacon/python-shell
 //
 // Pendent :
 //
@@ -44,9 +45,10 @@
 // 1.1.k - comptar antenes on/off i mostrar
 // 1.1.l - camp "lnk" al fitxer de socis
 // 1.1.m - manage "Division by zero" in python
+// 1.1.n - improve "Division by zero" error
 //
 
-var myVersio     = "v1.1.m" ;
+var myVersio     = "v1.1.n" ;
 
 var express     = require( 'express' ) ;
 var app         = express() ;
@@ -181,6 +183,7 @@ var szLog ; // to write into log and Bitacora
     PythonShell.run( '2_do_ping.py', python_options, function( err, results ) { // call python code implementing "ping()"
 
         if ( err ) {
+            console.log( 'ERR ' + JSON.stringify( err ) ) ;
             if ( err.code === 'ZeroDivisionError' ) { // accept this error
                 results[1] = '-' ;
             } else { 
