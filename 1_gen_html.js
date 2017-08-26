@@ -23,6 +23,7 @@
 //    https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array
 //    https://nodejs.org/api/fs.html#fs_file_system
 //    https://github.com/extrabacon/python-shell
+//    https://nodejs.org/api/errors.html
 //
 // Pendent :
 //
@@ -46,9 +47,10 @@
 // 1.1.l - camp "lnk" al fitxer de socis
 // 1.1.m - manage "Division by zero" in python
 // 1.1.n - improve "Division by zero" error
+// 1.1.o - try to catch "Division by zero" in python
 //
 
-var myVersio     = "v1.1.n" ;
+var myVersio     = "v1.1.o" ;
 
 var express     = require( 'express' ) ;
 var app         = express() ;
@@ -183,8 +185,10 @@ var szLog ; // to write into log and Bitacora
     PythonShell.run( '2_do_ping.py', python_options, function( err, results ) { // call python code implementing "ping()"
 
         if ( err ) {
-            console.log( 'ERR ' + JSON.stringify( err ) ) ;
-            if ( err.code === 'ZeroDivisionError' ) { // accept this error
+            console.log( '--- Python error ' + JSON.stringify( err ) ) ;
+            console.log( '--- Error message is (' + err.message + ').' ) ;
+//            if ( err.code == 'ZeroDivisionError' ) { // accept this error
+            if ( err.errno === 'ZeroDivisionError' ) { // accept this error
                 results[1] = '-' ;
             } else { 
                 throw err ; // fatal error : stop
