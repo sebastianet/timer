@@ -1,11 +1,13 @@
 //
-// This APP generates a HTML page every Timeout.
+// This APP generates a HTML page every Timeout..
 // The data is collected using a python "ping" on a list of IPs we read from a configuration file.
 //
 // Test it using 
 //
 //    http://192.168.1.123:3001/
 //    http://192.168.1.123:3001/pagina.html     auto-reload every 30 seconds
+//    http://10.139.130.117:3002/               des guifi-Torrelles
+//
 //    curl http://127.0.0.1:3001
 //    curl http://127.0.0.1:3001/ping
 //    curl http://127.0.0.1:3001/pagina.html
@@ -24,6 +26,7 @@
 //    https://nodejs.org/api/fs.html#fs_file_system
 //    https://github.com/extrabacon/python-shell
 //    https://nodejs.org/api/errors.html
+//    https://www.loggly.com/blog/exceptional-logging-of-exceptions-in-python/
 //
 // Pendent :
 //
