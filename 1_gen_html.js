@@ -57,20 +57,24 @@
 // 1.1.n - improve "Division by zero" error
 // 1.1.o - try to catch "Division by zero" in python
 // 1.1.p - update customer IP list
+// 1.2.a - allow multiple input files
 //
 
-var myVersio     = "v1.1.p" ;
+var myVersio     = "v1.2.a" ;
 
 var express     = require( 'express' ) ;
 var app         = express() ;
 const fs        = require( 'fs' ) ; // manage filesystem
 var PythonShell = require( 'python-shell' ) ;
 
-var fitxer_socis = "socis.json" ;  // configuracio de socis i IPs
+var fitxer_socis      = "socis.json" ;    // configuracio de socis i IPs
+var fitxer_estructura = "strcut.json" ;   // IPs de la infraestructura de guifi a Torrelles
+var fitxer_entrada    = "entrada.json" ;  // copy to set value
+
 var iNumSocis ;                    // numero actual de socis
 var dades_socis ;                  // guardem les dades 
 var idxSoci = 0 ;                  // soci amb el que estem treballant ara mateix
-var Detalls = 0 ;                  // control de la ttrassa que genereM
+var Detalls = 0 ;                  // control de la trassa que generem
 
 var python_options = {
     mode: 'text',
@@ -378,7 +382,7 @@ function myTimeout_Gen_HTML_Function ( arg ) { // generar pagina HTML
 
 // llegir les dades dels socis
 
-fs.readFile( fitxer_socis, 'utf8', function ( err, dadesJSON ) {
+fs.readFile( fitxer_entrada, 'utf8', function ( err, dadesJSON ) {
 
     if ( err ) throw err ;
 

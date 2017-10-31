@@ -11,9 +11,7 @@
     { "user": "aleix fernandez",        "ip": "10.139.130.121",  "lnk": "campanar" },
     { "user": "boi roig",               "ip": "10.139.130.131",  "lnk": "tabor" },
     { "user": "lourdes capella",        "ip": "10.139.130.136",  "lnk": "tabor" },
-    { "user": "albert romagosa",        "ip": "10.139.239.69",   "lnk": "tabor" },
     { "user": "baldiri roig",           "ip": "10.139.130.153",  "lnk": "tabor" },
-    { "user": "jaume noel",             "ip": "10.139.130.154",  "lnk": "tabor" },
     { "user": "jose luis lobato",       "ip": "10.139.130.228",  "lnk": "can coll" },
     { "user": "joaquim travesset",      "ip": "10.139.130.230",  "lnk": "can coll" },
     { "user": "simo garcia",            "ip": "10.139.238.36",   "lnk": "campanar" },
@@ -26,8 +24,11 @@
     { "user": "rafael garcia",          "ip": "10.139.238.167",  "lnk": "cementiri" },
     { "user": "toni luna",              "ip": "10.139.238.169",  "lnk": "cementiri" },
     { "user": "merixell llorente",      "ip": "10.139.238.180",  "lnk": "cementiri" },
-    { "user": "carles segura",          "ip": "10.139.238.253",  "lnk": "tabor" },
+    { "user": "carles segura",          "ip": "10.139.238.254",  "lnk": "tabor" },
     { "user": "carlos cornella",        "ip": "10.139.239.66",   "lnk": "tabor" },
     { "user": "jordi buzon",            "ip": "10.139.239.67",   "lnk": "tabor" },
-    { "user": "miguel angel torres",    "ip": "10.139.239.68",   "lnk": "tabor" }
+    { "user": "miguel angel torres",    "ip": "10.139.239.68",   "lnk": "tabor" },
+    { "user": "albert romagosa",        "ip": "10.139.239.69",   "lnk": "tabor" },
+    { "user": "jaume noel",             "ip": "10.139.239.100",  "lnk": "tabor" },
+    { "user": "montse leal murcia",     "ip": "10.139.239.101",  "lnk": "tabor" }
 ]
