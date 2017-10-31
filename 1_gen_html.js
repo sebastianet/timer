@@ -1,11 +1,14 @@
 //
 // This APP generates a HTML page every Timeout..
 // The data is collected using a python "ping" on a list of IPs we read from a configuration file.
+// As user IPs are in the guifi network, the server must be connected to WLAN_GAS2 wifi network.
+//
+// Code at https://github.com/sebastianet/timer
 //
 // Test it using 
 //
 //    http://192.168.1.123:3001/
-//    http://192.168.1.123:3001/pagina.html     auto-reload every 30 seconds
+//    http://192.168.1.123:3001/pagina.html     auto-reloads every 30 seconds
 //    http://10.139.130.117:3002/               des guifi-Torrelles
 //
 //    curl http://127.0.0.1:3001
@@ -14,10 +17,10 @@
 //
 // GIT
 //
-//    https://github.com/sebastianet
-//    git commit -am "descripcio"
-//    git push -u origin master
-//    git pull
+//    https://github.com/sebastianet            root of all my projects
+//    git commit -am "descripcio"               commit code as is now at source (Raspi)
+//    git push -u origin master                 send it to repository (github)
+//    git pull                                  get code at server (T60)
 //
 // URLs :
 //
@@ -33,6 +36,8 @@
 //    . enviar correu quan un node caigui i estigui aixi una estoneta
 //
 // Requisits : nodejs i python (see README.MD)
+//
+// PC : C:\sebas\miscosas\node\timer
 //
 // Llista de versions :
 //
@@ -51,9 +56,10 @@
 // 1.1.m - manage "Division by zero" in python
 // 1.1.n - improve "Division by zero" error
 // 1.1.o - try to catch "Division by zero" in python
+// 1.1.p - update customer IP list
 //
 
-var myVersio     = "v1.1.o" ;
+var myVersio     = "v1.1.p" ;
 
 var express     = require( 'express' ) ;
 var app         = express() ;
