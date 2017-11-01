@@ -1,9 +1,12 @@
 //
 // This APP generates a HTML page every Timeout..
-// The data is collected using a python "ping" on a list of IPs we read from a configuration file.
+// The data is collected using a python "ping" on a list of IPs we read from a configuration file, "entrada.json"
 // As user IPs are in the guifi network, the server must be connected to WLAN_GAS2 wifi network.
 //
-// Code at https://github.com/sebastianet/timer
+// Code at
+//    rspi /home/pi/timer                       (xarxa enxaneta)
+//    GIT https://github.com/sebastianet/timer  (public repository)
+//    T60 /home/sebas/node_projects/timer       (xarxa WLAN_GAS2)
 //
 // Test it using 
 //
@@ -15,7 +18,7 @@
 //    curl http://127.0.0.1:3001/ping
 //    curl http://127.0.0.1:3001/pagina.html
 //
-// GIT
+// GIT commands
 //
 //    https://github.com/sebastianet            root of all my projects
 //    git commit -am "descripcio"               commit code as is now at source (Raspi)
@@ -34,10 +37,13 @@
 // Pendent :
 //
 //    . enviar correu quan un node caigui i estigui aixi una estoneta
+//    . modify "fitxer_entrada" if input parameter present
 //
 // Requisits : nodejs i python (see README.MD)
 //
 // PC : C:\sebas\miscosas\node\timer
+// if T60 sends HTML via FTP, then we can see
+// ... https://torrelles-guifi.000webhostapp.com/pagina.html
 //
 // Llista de versions :
 //
@@ -68,8 +74,8 @@ const fs        = require( 'fs' ) ; // manage filesystem
 var PythonShell = require( 'python-shell' ) ;
 
 var fitxer_socis      = "socis.json" ;    // configuracio de socis i IPs
-var fitxer_estructura = "strcut.json" ;   // IPs de la infraestructura de guifi a Torrelles
-var fitxer_entrada    = "entrada.json" ;  // copy to set value
+var fitxer_estructura = "struct.json" ;   // IPs de la infraestructura de guifi a Torrelles
+var fitxer_entrada    = "entrada.json" ;  // copy either socis or struct onto entrada to set value
 
 var iNumSocis ;                    // numero actual de socis
 var dades_socis ;                  // guardem les dades 

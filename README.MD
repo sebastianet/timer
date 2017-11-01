@@ -5,7 +5,7 @@
 
  Aixi, el nostre programa fa :
 
-    1er llegeix una llista de socis del fitxer socis.json (nom + ip de moment)
+    1er llegeix una llista de socis del fitxer entrada.json (nom + ip de moment)
     2on cada 4 segons fa "ping" a una IP de la llista per saber si es activa
     3er cada 3 minuts genera un fitxer HTML, anomenat "pagina.html"
 
@@ -19,6 +19,7 @@
     5_test_ping.js       - proves de fer anar "2_do_ping.py" des nodejs
     6_test_json.js       - proves de llegir JSON des un fitxer de texte, config.json
     config.json          - fitxer de texte amb format JSON
+    entrada.json         - fitxer de entrada al programa, copia de socis.json o struct.json
     .git                 - configuracio del GIT
     .gitignore           - llista de fitxers que no es guarden al projecte GIT
     node_modules         - moduls de nodejs que li calen al projecte
@@ -27,6 +28,7 @@
     README.MD            - descripcio del projecte (aquest fitxer)
     ru.sh                - shell per engegar el programa en mode "SU"
     socis.json           - configuracio del programa : llista de socis que tenim i les seves IPs, en format JSON
+    struct.json          - dades dels supernodes de la xarxa guifi a torrelles
 
  Requisits :
 
@@ -46,4 +48,4 @@ Comprovat :
     Opsys : Windows Server 2008 64-bit
     C:\> node -v   :        v4.4.7
     C:\> python -V : Python 2.7.11
-
+.
