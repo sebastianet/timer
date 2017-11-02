@@ -8,6 +8,11 @@
 //    GIT https://github.com/sebastianet/timer  (public repository)
 //    T60 /home/sebas/node_projects/timer       (xarxa WLAN_GAS2)
 //
+// Configuration - 3 files are provided; one has to be copied into "entrada.json" 
+//    struct.json    : super nodes
+//    socis.json     : user/client nodes
+//    tot.json       : all nodes, supernodes and user/client nodes
+//
 // Test it using 
 //
 //    http://192.168.1.123:3001/
@@ -63,7 +68,7 @@
 // 1.1.n - improve "Division by zero" error
 // 1.1.o - try to catch "Division by zero" in python
 // 1.1.p - update customer IP list
-// 1.2.a - allow multiple input files
+// 1.2.a - provide multiple input files
 //
 
 var myVersio     = "v1.2.a" ;
