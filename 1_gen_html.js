@@ -70,9 +70,10 @@
 // 1.1.p - update customer IP list
 // 1.2.a - provide multiple input files
 // 1.2.b - locate JSON file in actual dir
+// 1.3.a - pass config file as cmd line param
 //
 
-var myVersio     = "v1.2.a" ;
+var myVersio     = "v1.3.a" ;
 
 var express     = require( 'express' ) ;
 var app         = express() ;
@@ -81,7 +82,7 @@ var PythonShell = require( 'python-shell' ) ;
 
 var fitxer_socis      = "socis.json" ;    // configuracio de socis i IPs
 var fitxer_estructura = "struct.json" ;   // IPs de la infraestructura de guifi a Torrelles
-var fitxer_entrada    = "./entrada.json" ;  // copy either socis or struct onto entrada to set value
+// var fitxer_entrada    = "./entrada.json" ;  // copy either socis or struct or "tot.json" onto entrada to set value
 
 var iNumSocis ;                    // numero actual de socis
 var dades_socis ;                  // guardem les dades 
@@ -92,14 +93,24 @@ var python_options = {
     mode: 'text',
     pythonPath: '/usr/bin/python',     // in Windows, must be blank, as we did set PYTHONPATH envir var
     pythonOptions: ['-u'],
-    scriptPath: '/home/pi/timer',                        // in Windows, must be as "c:/sebas/miscosas/node/timer"
-//    scriptPath: '/home/sebas/node_projects/timer',      // in Ubuntu, this is the location of the python file
+    scriptPath: '/home/pi/timer',                        // location of the python file .. in Odin
+//    scriptPath: 'c:/sebas/miscosas/node/timer',        // .. in Windows
+//    scriptPath: '/home/sebas/node_projects/timer',     // .. in T60 Ubuntu
+//    scriptPath: '/home/mate/node_projects/timer',      //..  in Punt Omnia Ubuntu
     args: ['value1', 'value2']
 } ;
 
 var Bitacora = [ '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a',   
                  'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k' ] ;  // lets have 20 elements
 
+
+// get command line parameters - $ node yourscript.js banana monkey
+
+var program_name = process.argv[0] ; // value will be "node"
+var script_path  = process.argv[1] ; // value will be "yourscript.js"
+var first_value  = process.argv[2] ; // value will be "banana"
+
+var fitxer_entrada = process.argv[2] ;
 
 // set some values in global var APP
 
@@ -392,7 +403,7 @@ function myTimeout_Gen_HTML_Function ( arg ) { // generar pagina HTML
 } ; // myTimeout_Gen_HTML_Function()
 
 
-// llegir les dades dels socis
+// llegir les dades dels socis del fitxer "fitxer_entrada"
 
 fs.readFile( fitxer_entrada, 'utf8', function ( err, dadesJSON ) {
 
