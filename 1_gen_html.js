@@ -69,6 +69,7 @@
 // 1.1.o - try to catch "Division by zero" in python
 // 1.1.p - update customer IP list
 // 1.2.a - provide multiple input files
+// 1.2.b - locate JSON file in actual dir
 //
 
 var myVersio     = "v1.2.a" ;
@@ -80,7 +81,7 @@ var PythonShell = require( 'python-shell' ) ;
 
 var fitxer_socis      = "socis.json" ;    // configuracio de socis i IPs
 var fitxer_estructura = "struct.json" ;   // IPs de la infraestructura de guifi a Torrelles
-var fitxer_entrada    = "entrada.json" ;  // copy either socis or struct onto entrada to set value
+var fitxer_entrada    = "./entrada.json" ;  // copy either socis or struct onto entrada to set value
 
 var iNumSocis ;                    // numero actual de socis
 var dades_socis ;                  // guardem les dades 
