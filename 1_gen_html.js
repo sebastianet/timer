@@ -38,6 +38,7 @@
 //    https://github.com/extrabacon/python-shell
 //    https://nodejs.org/api/errors.html
 //    https://www.loggly.com/blog/exceptional-logging-of-exceptions-in-python/
+//    https://nodejs.org/api/fs.html#fs_fs_writefile_file_data_options_callback
 //
 // Pendent :
 //
@@ -71,9 +72,11 @@
 // 1.2.a - provide multiple input files
 // 1.2.b - locate JSON file in actual dir
 // 1.3.a - pass config file as cmd line param
+// 1.3.b - use __dirname as write(pagina.nueva) fail from omnia_restart
+//         write pagina.html directly, without "delete" neither "move" from pagina.nueva
 //
 
-var myVersio     = "v1.3.a" ;
+var myVersio     = "v1.3.b" ;
 
 var express     = require( 'express' ) ;
 var app         = express() ;
@@ -87,7 +90,7 @@ var fitxer_estructura = "struct.json" ;   // IPs de la infraestructura de guifi 
 var iNumSocis ;                    // numero actual de socis
 var dades_socis ;                  // guardem les dades 
 var idxSoci = 0 ;                  // soci amb el que estem treballant ara mateix
-var Detalls = 0 ;                  // control de la trassa que generem
+var Detalls = 1 ;                  // control de la trassa que generem via "mConsole"
 
 var python_options = {
     mode: 'text',
@@ -292,35 +295,35 @@ function myTimeout_Gen_HTML_Function ( arg ) { // generar pagina HTML
 
 // generate new page "/public/pagina.html" so client gets fresh data
 
-    var szOut = genTimeStamp() + " >>> timeout generar PAGINA.HTML" ;
+    var szOut = genTimeStamp() + " >>> timeout generar PAGINA.HTML, dirname {"+ __dirname + "}." ;
     console.log( szOut ) ;
 
-//   (b1) delete the file we shall create, "pagina.nova"
-//   (b2) create "pagina.nova"
-//   (b3) delete old "pagina.html"
-//   (b4) rename "pagina.nova" as "pagina.html
+//   (b1) delete the file we shall create, "pagina.nova"            --- dont delete "pagina.nova"
+//   (b2) create "pagina.nova"                                      --- write "pagina.nova" with "overwrite" flag
+//   (b3) delete old "pagina.html"                                  --- delete "pagina.html"
+//   (b4) rename "pagina.nova" as "pagina.html                      --- copy "pagina.nova" to "pagina.html"
 
 // (b1) 
 
     var newFN = './public/pagina.nova' ;
-    mConsole( '(b1) delete ' + newFN ) ;
+    mConsole( '-(b1) delete ' + newFN ) ;
 
-    fs.unlink( newFN, (err) => {
-
-        if (err) {
-            if ( err.code === 'ENOENT' ) {
-                mConsole( '--- (b1) file '+ newFN +' does not exist' ) ;
-            } else {
-                throw err ; // fatal error : stop
-            } ;
-        } else {
-            mConsole( '+++ (b1) successfully deleted ' + newFN ) ;
-        } ;
+//    fs.unlink( newFN, (err) => {
+//
+//        if (err) {
+//            if ( err.code === 'ENOENT' ) {
+//                mConsole( '--- (b1) file '+ newFN +' does not exist' ) ;
+//            } else {
+//                throw err ; // fatal error : stop
+//            } ;
+//        } else {
+//            mConsole( '+++ (b1) successfully deleted ' + newFN ) ;
+//        } ;
 
 // (b2)
 
-        var newFN = './public/pagina.nova' ;
-        mConsole( '(b2) create ' + newFN ) ;
+
+        mConsole( '+(b2) create ' + newFN ) ;
 
         var S1 = '<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/html40/loose.dtd">\n' ;
         S1 += '<HTML>\n<HEAD>\n' ;
@@ -363,42 +366,45 @@ function myTimeout_Gen_HTML_Function ( arg ) { // generar pagina HTML
         S4 += '<p>Tornar a la pagina <a href="./inici.html">principal</a> | <a href="./events">events</a>\n' ;
         S4 += '<hr>\n</BODY>\n</HTML>\n' ; // end of PAGINA.HTML
 
-        fs.writeFile( newFN, S1+S2+S3+S4, (err) => {
+        var newFN_fp = __dirname + '/public/pagina.html' ;
+//        fs.writeFileSync( newFN, S1+S2+S3+S4) => { ; Sync has no callback
+        fs.writeFile( newFN_fp, S1+S2+S3+S4, (err) => {
 
             if (err) throw err ;
             mConsole( '+++ (b2) file ' + newFN + ' has been saved!' ) ;
 
 // (b3)
             var oldFN = './public/pagina.html' ;
-            mConsole( '(b3) delete ' + oldFN ) ;
-            fs.unlink( oldFN, (err) => {
+            mConsole( '-(b3) delete ' + oldFN ) ;
 
-                if (err) {
-                    if ( err.code === 'ENOENT' ) {
-                        console.error( '--- (b3) file ' + oldFN + ' does not exist' ) ;
-                    } else {
-                        throw err ; // fatal error : stop
-                    } ;
-                } else {
-                    mConsole( '+++ (b3) successfully deleted ' + oldFN ) ;
-                } ;
+//            fs.unlink( oldFN, (err) => {
+//
+//                if (err) {
+//                    if ( err.code === 'ENOENT' ) {
+//                        console.error( '--- (b3) file ' + oldFN + ' does not exist' ) ;
+//                    } else {
+//                        throw err ; // fatal error : stop
+//                    } ;
+//                } else {
+//                    mConsole( '+++ (b3) successfully deleted ' + oldFN ) ;
+///               } ;
 
 // (b4)
                 var newFN = './public/pagina.html' ;
                 var oldFN = './public/pagina.nova' ;
-                mConsole( '(b4) rename ' + oldFN + ' as ' + newFN ) ;
+                mConsole( '-(b4) rename ' + oldFN + ' as ' + newFN ) ;
 
-                fs.rename( oldFN, newFN, (err) => {
-
-                    if (err) throw err ;
-                    mConsole( '+++ (b4) renamed complete ' + newFN ) ;
-                } ) ; // rename()
-
-            } ) ; // synch delete "pagina.html"
+//                fs.rename( oldFN, newFN, (err) => {
+//
+//                    if (err) throw err ;
+//                    mConsole( '+++ (b4) renamed complete ' + newFN ) ;
+//                } ) ; // rename()
+//
+//            } ) ; // synch delete "pagina.html"
 
         } ) ; // write "pagina.nova"
 
-    } ) ; // synch delete "pagina.nova"
+//    } ) ; // synch delete "pagina.nova"
 
 } ; // myTimeout_Gen_HTML_Function()
 
