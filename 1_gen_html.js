@@ -74,9 +74,10 @@
 // 1.3.a - pass config file as cmd line param
 // 1.3.b - use __dirname as write(pagina.nueva) fail from omnia_restart
 //         write pagina.html directly, without "delete" neither "move" from pagina.nueva
+// 1.3.c - mostrar Homepage al Estat de les Antenes
 //
 
-var myVersio     = "v1.3.b" ;
+var myVersio     = "v1.3.c" ;
 
 var express     = require( 'express' ) ;
 var app         = express() ;
@@ -99,7 +100,7 @@ var python_options = {
     scriptPath: '/home/pi/timer',                        // location of the python file .. in Odin
 //    scriptPath: 'c:/sebas/miscosas/node/timer',        // .. in Windows
 //    scriptPath: '/home/sebas/node_projects/timer',     // .. in T60 Ubuntu
-//    scriptPath: '/home/mate/node_projects/timer',      //..  in Punt Omnia Ubuntu
+//    scriptPath: '/home/mate/node-projects/timer',      //..  in Punt Omnia Ubuntu
     args: ['value1', 'value2']
 } ;
 
@@ -164,7 +165,7 @@ Date.prototype.hhmmss = function () {
 
 function genTimeStamp ( arg ) {
 
-    var szOut = (new Date).yyyymmdd() + '-' + (new Date).hhmmss() ;
+    var szOut = (new Date).yyyymmdd() + ' - ' + (new Date).hhmmss() ;
 //    console.log( 'gen a TimeStamp {' + szOut + '}' ) ;
     return szOut ;
 
@@ -358,12 +359,14 @@ function myTimeout_Gen_HTML_Function ( arg ) { // generar pagina HTML
 
         } ) ; // forEach()
 
-        var S2 = '<hr>\n <h1>Estat de les antenes @ ' + genTimeStamp() + ' : [' + nWorking + ' on, ' + nAturat + ' off].</h1>\n' ;
+        var S2 = '<hr>\n <h1>Estat de les antenes @ ' + genTimeStamp() + ' [' + nWorking + ' on, ' + nAturat + ' off].</h1>\n' ;
         S2 += '<table class="t_socis">\n' ;
         S2 += '<tr> <th> id <th> Nom <th> IP <th> Link <th> Darrer canvi <th> Comptador</tr>\n' ;
 
         var S4 = '</table>\n<hr>\n' ;
-        S4 += '<p>Tornar a la pagina <a href="./inici.html">principal</a> | <a href="./events">events</a>\n' ;
+        S4 += '<p>Tornar a la pagina <a href="./inici.html">principal</a> | ' ;
+        S4 += 'Veure <a href="./events">events</a> | ' ;
+        S4 += '<a href="https://xarxatorrelles.cat/">Homepage Associaco Guifi Torrelles</a>\n' ;
         S4 += '<hr>\n</BODY>\n</HTML>\n' ; // end of PAGINA.HTML
 
         var newFN_fp = __dirname + '/public/pagina.html' ;
@@ -371,7 +374,7 @@ function myTimeout_Gen_HTML_Function ( arg ) { // generar pagina HTML
         fs.writeFile( newFN_fp, S1+S2+S3+S4, (err) => {
 
             if (err) throw err ;
-            mConsole( '+++ (b2) file ' + newFN + ' has been saved!' ) ;
+            mConsole( '+++ (b2) file ' + newFN_fp + ' has been saved!' ) ;
 
 // (b3)
             var oldFN = './public/pagina.html' ;

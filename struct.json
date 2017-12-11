@@ -12,5 +12,6 @@
     { "user": "ST1/AP1",        "ip": "10.139.130.65",    "lnk": "campanar" },
     { "user": "ST1/AP2",        "ip": "10.139.238.33",    "lnk": "campanar" },
     { "user": "ST2/AP3",        "ip": "10.139.130.97",    "lnk": "campanar" },
-    { "user": "ST2/AP4",        "ip": "10.139.238.65",    "lnk": "campanar" }
+    { "user": "ST2/AP4",        "ip": "10.139.238.65",    "lnk": "campanar" },
+    { "user": "Punt Omnia",     "ip": "10.139.238.194",   "lnk": "campanar" }
 ]
