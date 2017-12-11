@@ -4,14 +4,20 @@
 // As user IPs are in the guifi network, the server must be connected to WLAN_GAS2 wifi network.
 //
 // Code at
+//
 //    rspi /home/pi/timer                       (xarxa enxaneta)
 //    GIT https://github.com/sebastianet/timer  (public repository)
 //    T60 /home/sebas/node_projects/timer       (xarxa WLAN_GAS2)
+//    PC : C:\sebas\miscosas\node\timer
 //
 // Configuration - 3 files are provided; one has to be copied into "entrada.json" 
+//
 //    struct.json    : super nodes
 //    socis.json     : user/client nodes
 //    tot.json       : all nodes, supernodes and user/client nodes
+//
+// Run it using
+//    sudo node 1_gen_html.js  entrada.json
 //
 // Test it using 
 //
@@ -39,17 +45,19 @@
 //    https://nodejs.org/api/errors.html
 //    https://www.loggly.com/blog/exceptional-logging-of-exceptions-in-python/
 //    https://nodejs.org/api/fs.html#fs_fs_writefile_file_data_options_callback
+//    https://nodejs.org/api/util.html
 //
 // Pendent :
 //
 //    . enviar correu quan un node caigui i estigui aixi una estoneta
-//    . modify "fitxer_entrada" if input parameter present
+//    . fer servir logger as Winston or Morgan
 //
 // Requisits : nodejs i python (see README.MD)
 //
-// PC : C:\sebas\miscosas\node\timer
-// if T60 sends HTML via FTP, then we can see
-// ... https://torrelles-guifi.000webhostapp.com/pagina.html
+// www :
+//
+//    if T60 or PuntOmnia sends HTML via FTP, then we can see
+//    ... https://torrelles-guifi.000webhostapp.com/pagina.html
 //
 // Llista de versions :
 //
@@ -62,7 +70,7 @@
 // 1.1.g - minimal cfg file, rest is created
 // 1.1.h - improve ping() return text search
 // 1.1.i - uniform timestamp in log
-// 1.1.j - mConsole() controla la sortida a log
+// 1.1.j - mConsole() controla la sortida a log i posa timestamp
 // 1.1.k - comptar antenes on/off i mostrar
 // 1.1.l - camp "lnk" al fitxer de socis
 // 1.1.m - manage "Division by zero" in python
@@ -75,18 +83,17 @@
 // 1.3.b - use __dirname as write(pagina.nueva) fail from omnia_restart
 //         write pagina.html directly, without "delete" neither "move" from pagina.nueva
 // 1.3.c - mostrar Homepage al Estat de les Antenes
+// 1.3.d - no fer servir colsole.log enlloc, sino mConsole()
+// 1.3.e - use util.format as sprintf()
 //
 
-var myVersio     = "v1.3.c" ;
+var myVersio     = "v1.3.e" ;
 
 var express     = require( 'express' ) ;
 var app         = express() ;
 const fs        = require( 'fs' ) ; // manage filesystem
 var PythonShell = require( 'python-shell' ) ;
-
-var fitxer_socis      = "socis.json" ;    // configuracio de socis i IPs
-var fitxer_estructura = "struct.json" ;   // IPs de la infraestructura de guifi a Torrelles
-// var fitxer_entrada    = "./entrada.json" ;  // copy either socis or struct or "tot.json" onto entrada to set value
+var util        = require( 'util' ) ;
 
 var iNumSocis ;                    // numero actual de socis
 var dades_socis ;                  // guardem les dades 
@@ -100,7 +107,7 @@ var python_options = {
     scriptPath: '/home/pi/timer',                        // location of the python file .. in Odin
 //    scriptPath: 'c:/sebas/miscosas/node/timer',        // .. in Windows
 //    scriptPath: '/home/sebas/node_projects/timer',     // .. in T60 Ubuntu
-//    scriptPath: '/home/mate/node-projects/timer',      //..  in Punt Omnia Ubuntu
+//    scriptPath: '/home/mate/nodejs-projects/timer',    //..  in Punt Omnia Ubuntu
     args: ['value1', 'value2']
 } ;
 
@@ -114,6 +121,7 @@ var program_name = process.argv[0] ; // value will be "node"
 var script_path  = process.argv[1] ; // value will be "yourscript.js"
 var first_value  = process.argv[2] ; // value will be "banana"
 
+// var fitxer_entrada    = "./entrada.json" ;  // copy either socis or struct or "tot.json" onto entrada to set value
 var fitxer_entrada = process.argv[2] ;
 
 // set some values in global var APP
@@ -130,9 +138,17 @@ var fitxer_entrada = process.argv[2] ;
 
 // implement few own functions
 
+function genTimeStamp ( arg ) {
+
+    var szOut = (new Date).yyyymmdd() + ' - ' + (new Date).hhmmss() ;
+//    console.log( 'gen a TimeStamp {' + szOut + '}' ) ;
+    return szOut ;
+
+} ; // genTimeStamp()
+
 function mConsole ( szIn ) {
     if ( Detalls == 1 ) {
-        console.log( szIn ) ;
+        console.log( genTimeStamp() + ' - ' + szIn ) ;
     } ;
 
 } ; // mConsole()
@@ -163,14 +179,6 @@ Date.prototype.hhmmss = function () {
 
 } ; // hhmmss()
 
-function genTimeStamp ( arg ) {
-
-    var szOut = (new Date).yyyymmdd() + ' - ' + (new Date).hhmmss() ;
-//    console.log( 'gen a TimeStamp {' + szOut + '}' ) ;
-    return szOut ;
-
-} ; // genTimeStamp()
-
 
 // Bitacora : save important events and list them on demand.
 
@@ -178,9 +186,9 @@ function Poner_Bitacora ( szIn ) { // save an important event
 
 var szOut = genTimeStamp() + ' ' + szIn ;
 
-    console.log( genTimeStamp() + ' (###) Posar bitacora : ' + szIn ) ; // first, write to console
-    var newLength = Bitacora.unshift( szOut ) ;  // add to the front
-    var last      = Bitacora.pop() ;             // remove from the end
+    mConsole( '(###) Posar bitacora : ' + szIn ) ; // first, write to console
+    var newLength = Bitacora.unshift( szOut ) ;    // add to the front
+    var last      = Bitacora.pop() ;               // remove from the end
     return 0 ;
 
 } ; // Poner_Bitacora()
@@ -188,7 +196,7 @@ var szOut = genTimeStamp() + ' ' + szIn ;
 
 function Listar_Bitacora () { // return the last events
 
-//    console.log( '>>> Listar bitacora' ) ;
+//    mConsole( '>>> Listar bitacora' ) ;
 
     var szOut = " " ;
 
@@ -212,7 +220,7 @@ var szNow ; // to get timestamp
 var szLog ; // to write into log and Bitacora
 
     var iPing_IP = dades_socis [ idxSoci ].ip ;
-    var szOut = genTimeStamp() + " >>> timeout fer Ping. Soci " + idxSoci + "/" + iNumSocis + ". " ;
+    var szOut = " >>> timeout fer Ping. Soci " + idxSoci + "/" + iNumSocis + ". " ;
     szOut += 'IP {' + iPing_IP + '}, ' ;
     szOut += 'nom {' + dades_socis [ idxSoci ].user + '}, ' ;
     szOut += 'q {' + dades_socis [ idxSoci ].status + '}' ;
@@ -225,8 +233,8 @@ var szLog ; // to write into log and Bitacora
     PythonShell.run( '2_do_ping.py', python_options, function( err, results ) { // call python code implementing "ping()"
 
         if ( err ) {
-            console.log( '--- Python error ' + JSON.stringify( err ) ) ;
-            console.log( '--- Error message is (' + err.message + ').' ) ;
+            mConsole( '--- Python error ' + JSON.stringify( err ) ) ;
+            mConsole( '--- Error message is (' + err.message + ').' ) ;
 //            if ( err.code == 'ZeroDivisionError' ) { // accept this error
             if ( err.errno === 'ZeroDivisionError' ) { // accept this error
                 results[1] = '-' ;
@@ -237,7 +245,8 @@ var szLog ; // to write into log and Bitacora
         
 //        if ( err ) throw err;
 
-        console.log( genTimeStamp() + ' (+) Python results (%j).', results ) ; // results is an array of messages collected during execution
+        szOut = util.format( "(+) Python results ( %s ).", results ) ; // results is an array of messages collected during execution
+        mConsole( szOut ) ; 
 
 // if "RC 0"  then "on", if "RC KO" then "off"
 
@@ -296,8 +305,8 @@ function myTimeout_Gen_HTML_Function ( arg ) { // generar pagina HTML
 
 // generate new page "/public/pagina.html" so client gets fresh data
 
-    var szOut = genTimeStamp() + " >>> timeout generar PAGINA.HTML, dirname {"+ __dirname + "}." ;
-    console.log( szOut ) ;
+    var szOut = ">>> timeout generar PAGINA.HTML, dirname {"+ __dirname + "}." ;
+    mConsole( szOut ) ;
 
 //   (b1) delete the file we shall create, "pagina.nova"            --- dont delete "pagina.nova"
 //   (b2) create "pagina.nova"                                      --- write "pagina.nova" with "overwrite" flag
@@ -428,12 +437,12 @@ fs.readFile( fitxer_entrada, 'utf8', function ( err, dadesJSON ) {
         dades_socis [index].timestamp = ' ' ; // ... that are calculated by program, 
         dades_socis [index].count     = 0 ;   // ... not initial or constant values
  
-        console.log( "Index " + index + "/" + iNumSocis + " has" ) ;
-        console.log( "\tout.user      \t"   + dades_socis [index].user ) ;
-        console.log( "\tout.ip        \t"   + dades_socis [index].ip ) ;
-        console.log( "\tout.lnk       \t"   + dades_socis [index].lnk ) ;
-        console.log( "\tout.status    \t"   + dades_socis [index].status ) ;
-        console.log( "\tout.timestamp \t"   + dades_socis [index].timestamp ) ;
+        mConsole( "Index " + index + "/" + iNumSocis + " has" ) ;
+        mConsole( "\tout.user      \t"   + dades_socis [index].user ) ;
+        mConsole( "\tout.ip        \t"   + dades_socis [index].ip ) ;
+        mConsole( "\tout.lnk       \t"   + dades_socis [index].lnk ) ;
+        mConsole( "\tout.status    \t"   + dades_socis [index].status ) ;
+        mConsole( "\tout.timestamp \t"   + dades_socis [index].timestamp ) ;
 
     } ) ; // forEach()
 
@@ -451,7 +460,7 @@ fs.readFile( fitxer_entrada, 'utf8', function ( err, dadesJSON ) {
 
 // Write an initial message into console.
 	app.set( 'appHostname', require('os').hostname() ) ;
-	console.log( "+++ +++ +++ +++ APP Timer starts. Versio[%s], HN[%s], TimeStamp[%s].", myVersio, app.get('appHostname'), genTimeStamp() ) ;
+	mConsole( "+++ +++ +++ +++ TIMER app starts. Versio[%s], HN[%s], TimeStamp[%s].", myVersio, app.get('appHostname'), genTimeStamp() ) ;
 
 
 
@@ -461,7 +470,7 @@ fs.readFile( fitxer_entrada, 'utf8', function ( err, dadesJSON ) {
 
 app.get( '/events', function ( req, res ) {
 
-    console.log( ">>> got /EVENTS." ) ;
+    mConsole( ">>> got /EVENTS." ) ;
 
     var texte = "<HTML>\n<HEAD>\n" ;
     texte += '<LINK REL=STYLESHEET HREF="pagina.css" TYPE="text/css">\n' ;
@@ -490,7 +499,7 @@ app.get( '/events', function ( req, res ) {
 
 app.get( '/', function (req, res) {
 
-    console.log( ">>> got /, root. Send INICI.HTML " ) ;
+    mConsole( ">>> got /, root. Send INICI.HTML " ) ;
     res.sendFile( __dirname + '/public/inici.html' ) ;
 
 }) ; // get "/"
@@ -499,8 +508,8 @@ app.get( '/', function (req, res) {
 // start server
 
 var listener = app.listen( app.get( 'cfgPort' ), function () {
-    console.log( '(in) app listening on port', listener.address().port )
+    mConsole( '(in) app listening on port', listener.address().port )
 })
 
-console.log( '(out) APP listening at port', app.get( 'cfgPort' ) ) ;
+mConsole( '(out) APP listening at port', app.get( 'cfgPort' ) ) ;
 

@@ -1,7 +1,7 @@
 
  Volem tenir un servidor de pagines web
  En aquesta pagina es veuen totes les IPs dels socis de guifi.net de Torrelles i el seu estat.
- El client pot accedir-hi des un browser amb la URL http://<ip-del-servidor>:3001
+ El client pot accedir-hi des un browser amb la URL http://ip_o_nom-del-servidor:3001
 
  Aixi, el nostre programa fa :
 
@@ -19,16 +19,14 @@
     5_test_ping.js       - proves de fer anar "2_do_ping.py" des nodejs
     6_test_json.js       - proves de llegir JSON des un fitxer de texte, config.json
     config.json          - fitxer de texte amb format JSON
-    entrada.json         - fitxer de entrada al programa, copia de socis.json o struct.json
+    entrada.json         - fitxer de entrada al programa : llista de socis que tenim i les seves IPs, en format JSON
     .git                 - configuracio del GIT
     .gitignore           - llista de fitxers que no es guarden al projecte GIT
     node_modules         - moduls de nodejs que li calen al projecte
     package.json         - configuracio del software del projecte
     public               - fitxers HTML que fem servir, CSS, FAVICON, etc
     README.MD            - descripcio del projecte (aquest fitxer)
-    ru.sh                - shell per engegar el programa en mode "SU"
-    socis.json           - configuracio del programa : llista de socis que tenim i les seves IPs, en format JSON
-    struct.json          - dades dels supernodes de la xarxa guifi a torrelles
+    ru.sh                - shell per engegar el programa - es crida des rc.local via pomnia_restart amb usuari root
 
  Requisits :
 
