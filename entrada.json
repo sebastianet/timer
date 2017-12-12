@@ -37,7 +37,7 @@
     { "user": "toni luna",               "ip": "10.139.238.169",  "lnk": "cementiri AP2 10.139.238.161" },
     { "user": "merixell llorente",       "ip": "10.139.238.180",  "lnk": "cementiri AP2 10.139.238.161" },
     { "user": "edgar ramon hernandez",   "ip": "10.139.238.226",  "lnk": "tabor RD1/AP1 10.139.238.225" },
-    { "user": "lourdes capella llovera", "ip": "10.139.239.228",  "lnk": "tabor ST1/AP1 10.139.238.225" },
+    { "user": "lourdes capella llovera", "ip": "10.139.238.228",  "lnk": "tabor RD1/AP1 10.139.238.225" },
     { "user": "miguel angel gomez",      "ip": "10.139.238.229",  "lnk": "tabor RD1/AP1 10.139.238.225" },
     { "user": "baldiri roig casas",      "ip": "10.139.238.231",  "lnk": "tabor RD1/AP1 10.139.238.225" },
     { "user": "carlos cornella",         "ip": "10.139.239.66",   "lnk": "tabor RD1/AP2 10.139.239.65" },
