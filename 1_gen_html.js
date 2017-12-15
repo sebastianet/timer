@@ -85,9 +85,10 @@
 // 1.3.c - mostrar Homepage al Estat de les Antenes
 // 1.3.d - no fer servir colsole.log enlloc, sino mConsole()
 // 1.3.e - use util.format as sprintf()
+// 1.3.f - fix Rafael Ruiz and Josep Montserrat
 //
 
-var myVersio     = "v1.3.e" ;
+var myVersio     = "v1.3.f" ;
 
 var express     = require( 'express' ) ;
 var app         = express() ;
@@ -374,8 +375,8 @@ function myTimeout_Gen_HTML_Function ( arg ) { // generar pagina HTML
 
         var S4 = '</table>\n<hr>\n' ;
         S4 += '<p>Tornar a la pagina <a href="./inici.html">principal</a> | ' ;
-        S4 += 'Veure <a href="./events">events</a> | ' ;
-        S4 += '<a href="https://xarxatorrelles.cat/">Homepage Associaco Guifi Torrelles</a>\n' ;
+        S4 += 'Veure <a href="./events">events</a> (local net only) | ' ;
+        S4 += '<a href="https://xarxatorrelles.cat/">Homepage Associacio Guifi Torrelles</a>\n' ;
         S4 += '<hr>\n</BODY>\n</HTML>\n' ; // end of PAGINA.HTML
 
         var newFN_fp = __dirname + '/public/pagina.html' ;
