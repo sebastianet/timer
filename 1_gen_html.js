@@ -86,9 +86,10 @@
 // 1.3.d - no fer servir colsole.log enlloc, sino mConsole()
 // 1.3.e - use util.format as sprintf()
 // 1.3.f - fix Rafael Ruiz and Josep Montserrat
+// 1.3.g - display hostname in generated html
 //
 
-var myVersio     = "v1.3.f" ;
+var myVersio     = "v1.3.g" ;
 
 var express     = require( 'express' ) ;
 var app         = express() ;
@@ -127,9 +128,10 @@ var fitxer_entrada = process.argv[2] ;
 
 // set some values in global var APP
 
-    app.set( 'cfgPort', process.env.PORT || 3001 ) ;
-    app.set( 'cfgLapse_Gen_HTML', 180000 ) ; // mili-segons - gen HTML every ... 5 minuts = 300 segons, 3 minuts = 180 seg.
-    app.set( 'cfgLapse_Do_Ping', 4000 ) ;    // mili-segons - do Ping every ... 4 seconds
+    app.set( 'cfgPort', process.env.PORT || 3001 ) ;      // set port
+    app.set( 'cfgLapse_Gen_HTML', 180000 ) ;              // mili-segons - gen HTML every ... 5 minuts = 300 segons, 3 minuts = 180 seg.
+    app.set( 'cfgLapse_Do_Ping', 4000 ) ;                 // mili-segons - do Ping every ... 4 seconds
+    app.set( 'appHostname', require('os').hostname() ) ;  // save hostname
 
 
 // set where do we serve HTML pages from
@@ -376,7 +378,8 @@ function myTimeout_Gen_HTML_Function ( arg ) { // generar pagina HTML
         var S4 = '</table>\n<hr>\n' ;
         S4 += '<p>Tornar a la pagina <a href="./inici.html">principal</a> | ' ;
         S4 += 'Veure <a href="./events">events</a> (local net only) | ' ;
-        S4 += '<a href="https://xarxatorrelles.cat/">Homepage Associacio Guifi Torrelles</a>\n' ;
+        S4 += '<a href="https://xarxatorrelles.cat/">Homepage Associacio Guifi Torrelles</a> - ' ;
+        S4 += 'Versio [' + myVersio + '] at host {' + app.get('appHostname') + '}.\n' ;
         S4 += '<hr>\n</BODY>\n</HTML>\n' ; // end of PAGINA.HTML
 
         var newFN_fp = __dirname + '/public/pagina.html' ;
@@ -460,9 +463,8 @@ fs.readFile( fitxer_entrada, 'utf8', function ( err, dadesJSON ) {
 
 
 // Write an initial message into console.
-	app.set( 'appHostname', require('os').hostname() ) ;
-	mConsole( "+++ +++ +++ +++ TIMER app starts. Versio[%s], HN[%s], TimeStamp[%s].", myVersio, app.get('appHostname'), genTimeStamp() ) ;
 
+	mConsole( "+++ +++ +++ +++ TIMER app starts. Versio[%s], HN[%s], TimeStamp[%s].", myVersio, app.get('appHostname'), genTimeStamp() ) ;
 
 
 // implement branches answering the client requests
