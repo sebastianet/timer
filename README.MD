@@ -2,6 +2,7 @@
  Volem tenir un servidor de pagines web
  En aquesta pagina es veuen totes les IPs dels socis de guifi.net de Torrelles i el seu estat.
  El client pot accedir-hi des un browser amb la URL http://ip_o_nom-del-servidor:3001
+ Si un agent FTP ho envia a Internet, sera a https://torrelles-guifi.000webhostapp.com/pagina.html
 
  Aixi, el nostre programa fa :
 
@@ -18,6 +19,7 @@
     2_do_ping.py         - codi en python que fa el "ping"
     5_test_ping.js       - proves de fer anar "2_do_ping.py" des nodejs
     6_test_json.js       - proves de llegir JSON des un fitxer de texte, config.json
+    7_test_wget.js       - proves de fer anar "wget" del nodejs
     config.json          - fitxer de texte amb format JSON
     entrada.json         - fitxer de entrada al programa : llista de socis que tenim i les seves IPs, en format JSON
     .git                 - configuracio del GIT

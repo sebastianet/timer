@@ -87,9 +87,10 @@
 // 1.3.e - use util.format as sprintf()
 // 1.3.f - fix Rafael Ruiz and Josep Montserrat
 // 1.3.g - display hostname in generated html
+// 1.3.h - fix Montse Potrony
 //
 
-var myVersio     = "v1.3.g" ;
+var myVersio     = "v1.3.h" ;
 
 var express     = require( 'express' ) ;
 var app         = express() ;
