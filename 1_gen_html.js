@@ -5,10 +5,11 @@
 //
 // Code at
 //
-//    rspi /home/pi/timer                       (xarxa enxaneta)
-//    GIT https://github.com/sebastianet/timer  (public repository)
-//    T60 /home/sebas/node_projects/timer       (xarxa WLAN_GAS2)
-//    PC : C:\sebas\miscosas\node\timer
+//    rspi    /home/pi/timer                          (xarxa enxaneta)
+//    GIT     https://github.com/sebastianet/timer    (public repository)
+//    T60     /home/sebas/node_projects/timer         (xarxa WLAN_GAS2)
+//    PC      C:\sebas\miscosas\node\timer            (xarxa WLAN_GAS2)
+//    pomnia  /home/users/mate/nodejs-projects/timer  (xarxa guifi)
 //
 // Configuration - 3 files are provided; one has to be copied into "entrada.json" 
 //
@@ -18,6 +19,9 @@
 //
 // Run it using
 //    sudo node 1_gen_html.js  entrada.json
+//
+// Output
+//    program writes onto console.log, that can be redirected to a file from ru.sh
 //
 // Test it using 
 //
@@ -88,9 +92,10 @@
 // 1.3.f - fix Rafael Ruiz and Josep Montserrat
 // 1.3.g - display hostname in generated html
 // 1.3.h - fix Montse Potrony
+// 1.3.i - fix Luis Mabilon
 //
 
-var myVersio     = "v1.3.h" ;
+var myVersio     = "v1.3.i" ;
 
 var express     = require( 'express' ) ;
 var app         = express() ;
@@ -107,10 +112,10 @@ var python_options = {
     mode: 'text',
     pythonPath: '/usr/bin/python',     // in Windows, must be blank, as we did set PYTHONPATH envir var
     pythonOptions: ['-u'],
-    scriptPath: '/home/pi/timer',                        // location of the python file .. in Odin
+//    scriptPath: '/home/pi/timer',                        // location of the python file .. in Odin
 //    scriptPath: 'c:/sebas/miscosas/node/timer',        // .. in Windows
 //    scriptPath: '/home/sebas/node_projects/timer',     // .. in T60 Ubuntu
-//    scriptPath: '/home/mate/nodejs-projects/timer',    //..  in Punt Omnia Ubuntu
+    scriptPath: '/home/mate/nodejs-projects/timer',    //..  in Punt Omnia Ubuntu
     args: ['value1', 'value2']
 } ;
 

@@ -17,7 +17,7 @@
     { "user": "moises potrony",          "ip": "10.139.130.69",   "lnk": "campanar AP3 10.139.130.97" },
     { "user": "jordi travesset",         "ip": "10.139.130.72",   "lnk": "campanar AP1 10.139.130.65" },
     { "user": "gabriel ramoneda",        "ip": "10.139.130.99",   "lnk": "campanar AP3 10.139.130.97" },
-    { "user": "lluis mabilon",           "ip": "10.139.130.100",  "lnk": "campanar AP3 10.139.130.97" },
+    { "user": "lluis mabilon",           "ip": "10.139.130.81",   "lnk": "campanar AP1 10.139.130.65" },
     { "user": "josep vico",              "ip": "10.139.130.102",  "lnk": "campanar AP3 10.139.130.97" },
     { "user": "quises arruga",           "ip": "10.139.130.103",  "lnk": "campanar AP3 10.139.130.97" },
     { "user": "josep manel andreu",      "ip": "10.139.130.116",  "lnk": "campanar AP3 10.139.130.97" },
@@ -38,12 +38,11 @@
     { "user": "merixell llorente",       "ip": "10.139.238.180",  "lnk": "cementiri AP2 10.139.238.161" },
     { "user": "edgar ramon hernandez",   "ip": "10.139.238.226",  "lnk": "tabor RD1/AP1 10.139.238.225" },
     { "user": "lourdes capella llovera", "ip": "10.139.238.228",  "lnk": "tabor RD1/AP1 10.139.238.225" },
-    { "user": "miguel angel gomez",      "ip": "10.139.238.229",  "lnk": "tabor RD1/AP1 10.139.238.225" },
+    { "user": "miguel angel gomez",      "ip": "10.139.239.70",   "lnk": "tabor RD1/AP2 10.139.239.65" },
     { "user": "baldiri roig casas",      "ip": "10.139.238.231",  "lnk": "tabor RD1/AP1 10.139.238.225" },
     { "user": "carlos cornella",         "ip": "10.139.239.66",   "lnk": "tabor RD1/AP2 10.139.239.65" },
     { "user": "jordi buzon",             "ip": "10.139.239.67",   "lnk": "tabor RD1/AP2 10.139.239.65" },
     { "user": "miguel angel torres",     "ip": "10.139.239.68",   "lnk": "tabor RD1/AP2 10.139.239.65" },
-    { "user": "albert romagosa",         "ip": "10.139.239.69",   "lnk": "tabor RD1/AP2 10.139.239.65" },
     { "user": "jaume noel juncosa",      "ip": "10.139.239.100",  "lnk": "tabor RD1/AP3 10.139.239.97" },
     { "user": "montse leal murcia",      "ip": "10.139.239.101",  "lnk": "tabor RD1/AP3 10.139.239.97" }
 ]

@@ -34,7 +34,7 @@ else
   logFN="/tmp"
 fi
 
-szTxt="("$mydate"-"$mytime") +++ +++ +++ TIMER socis guifi starts on ("$myhn"), log to ("$logFN")."
+szTxt="("$mydate"-"$mytime") +++ +++ +++ POMNIA +++ TIMER socis guifi starts on ("$myhn"), log to ("$logFN")."
 logger  -i   -p user.info  $szTxt
 
 echo "+++ [`date -R`] +++ {ru.sh} +++ TIMER app engega on ("$myhn")." >> $logFN
