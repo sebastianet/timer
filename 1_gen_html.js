@@ -93,9 +93,11 @@
 // 1.3.g - display hostname in generated html
 // 1.3.h - fix Montse Potrony
 // 1.3.i - fix Luis Mabilon
+// 1.3.j - try to catch SIGHUP to reload config file
+//          sudo   kill -1  1319 ; where 1319 is the output of "ps -ef | grep 1_g"
 //
 
-var myVersio     = "v1.3.i" ;
+var myVersio     = "v1.3.j" ;
 
 var express     = require( 'express' ) ;
 var app         = express() ;
@@ -130,7 +132,7 @@ var script_path  = process.argv[1] ; // value will be "yourscript.js"
 var first_value  = process.argv[2] ; // value will be "banana"
 
 // var fitxer_entrada    = "./entrada.json" ;  // copy either socis or struct or "tot.json" onto entrada to set value
-var fitxer_entrada = process.argv[2] ;
+var fitxer_entrada = process.argv[2] ;         // see ru.sh !
 
 // set some values in global var APP
 
@@ -219,6 +221,14 @@ function Listar_Bitacora () { // return the last events
 } ; // Listar_Bitacora()
 
 
+// try to reload configuration on user request
+
+process.on( 'SIGHUP', () => {
+  console.log( '+++ Received SIGHUP.' ) ;
+  llegir_JSON( fitxer_entrada ) ;
+}) ;
+
+
 // lets implement what to do when the TIMEOUT lapse expires
 
 // (1) ping timeout
@@ -232,7 +242,7 @@ var szLog ; // to write into log and Bitacora
     var szOut = " >>> timeout fer Ping. Soci " + idxSoci + "/" + iNumSocis + ". " ;
     szOut += 'IP {' + iPing_IP + '}, ' ;
     szOut += 'nom {' + dades_socis [ idxSoci ].user + '}, ' ;
-    szOut += 'q {' + dades_socis [ idxSoci ].status + '}' ;
+    szOut += 'q {' + dades_socis [ idxSoci ].estatus + '}' ;
     mConsole( szOut ) ;
 
 // fem ping() amb python
@@ -266,7 +276,7 @@ var szLog ; // to write into log and Bitacora
         szNow = genTimeStamp() ; // get timestamp
         if ( idx >= 0 ) { // substring found, meaning IP is ALIVE at this moment
 
-            if ( dades_socis [ idxSoci ].status != '+' ) { // ip was not up => ip comes up right now
+            if ( dades_socis [ idxSoci ].estatus != '+' ) { // ip was not up => ip comes up right now
 
                 dades_socis [ idxSoci ].timestamp = szNow ; // set timestamp of the moment ip went up
                 dades_socis [ idxSoci ].count = 0 ;         // set count to 0
@@ -278,11 +288,11 @@ var szLog ; // to write into log and Bitacora
                 dades_socis [ idxSoci ].count = dades_socis [ idxSoci ].count +1 ;     // count "on" periods
             } ;
 
-            dades_socis [ idxSoci ].status = '+' ; // set IP is UP
+            dades_socis [ idxSoci ].estatus = '+' ; // set IP is UP
 
         } else { // substring not found, meaning IP is DEAD at this moment
 
-            if ( dades_socis [ idxSoci ].status != '-' ) { // ip was not down => ip goes down right now
+            if ( dades_socis [ idxSoci ].estatus != '-' ) { // ip was not down => ip goes down right now
 
                 dades_socis [ idxSoci ].timestamp = szNow ; // set timestamp of the moment ip went down
                 dades_socis [ idxSoci ].count = 0 ;         // set count to 0
@@ -294,7 +304,7 @@ var szLog ; // to write into log and Bitacora
                 dades_socis [ idxSoci ].count = dades_socis [ idxSoci ].count +1 ;     // count "off" periods
             } ;
 
-            dades_socis [ idxSoci ].status = '-' ; // set IP is DOWN
+            dades_socis [ idxSoci ].estatus = '-' ; // set IP is DOWN
 
         } ;
 
@@ -360,7 +370,7 @@ function myTimeout_Gen_HTML_Function ( arg ) { // generar pagina HTML
 
         dades_socis.forEach( function ( soci, index ) {
 
-            if ( dades_socis [index].status == '+' ) {
+            if ( dades_socis [index].estatus == '+' ) {
                 szTR = '<tr class="t_soci_working">' ;
                 nWorking += 1 ;
             } else {
@@ -431,9 +441,12 @@ function myTimeout_Gen_HTML_Function ( arg ) { // generar pagina HTML
 } ; // myTimeout_Gen_HTML_Function()
 
 
-// llegir les dades dels socis del fitxer "fitxer_entrada"
+// funcio per llegir les dades dels socis del fitxer "fitxer_entrada"
+// es crida 2 cops : una en engegar el programa, l'altre amb el SIGHUP
 
-fs.readFile( fitxer_entrada, 'utf8', function ( err, dadesJSON ) {
+function llegir_JSON( fitxer_entrada ) {
+
+  fs.readFile( fitxer_entrada, 'utf8', function ( err, dadesJSON ) {
 
     if ( err ) throw err ;
 
@@ -443,7 +456,7 @@ fs.readFile( fitxer_entrada, 'utf8', function ( err, dadesJSON ) {
 
     dades_socis.forEach( function ( soci, index ) {
 
-        dades_socis [index].status    = '+' ; // create new fields ...
+        dades_socis [index].estatus   = '+' ; // create new fields ...
         dades_socis [index].timestamp = ' ' ; // ... that are calculated by program, 
         dades_socis [index].count     = 0 ;   // ... not initial or constant values
  
@@ -451,12 +464,18 @@ fs.readFile( fitxer_entrada, 'utf8', function ( err, dadesJSON ) {
         mConsole( "\tout.user      \t"   + dades_socis [index].user ) ;
         mConsole( "\tout.ip        \t"   + dades_socis [index].ip ) ;
         mConsole( "\tout.lnk       \t"   + dades_socis [index].lnk ) ;
-        mConsole( "\tout.status    \t"   + dades_socis [index].status ) ;
+        mConsole( "\tout.status    \t"   + dades_socis [index].estatus ) ;
         mConsole( "\tout.timestamp \t"   + dades_socis [index].timestamp ) ;
 
     } ) ; // forEach()
 
-} ) ; // readFile()
+  } ) ; // readFile()
+
+} ; // llegir_JSON()
+
+// read configuration file at startup
+
+  llegir_JSON( fitxer_entrada ) ;
 
 
 // set 2 repetitive timeouts
