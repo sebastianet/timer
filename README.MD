@@ -1,14 +1,12 @@
 
- Volem tenir un servidor de pagines web
- En aquesta pagina es veuen totes les IPs dels socis de guifi.net de Torrelles i el seu estat.
+ El nostre programa fa :
+
+    1er - llegeix una llista de socis del fitxer "entrada.json" amb (nom + ip) - uns 50 elements
+    2on - cada 4 segons fa "ping" a una IP de la llista per saber si es activa - uns 200 segons
+    3er - cada 5 minuts genera un fitxer HTML, anomenat "pagina.html"          - uns 300 segons
+
  El client pot accedir-hi des un browser amb la URL http://ip_o_nom-del-servidor:3001
  Si un agent FTP ho envia a Internet, sera a https://torrelles-guifi.000webhostapp.com/pagina.html
-
- Aixi, el nostre programa fa :
-
-    1er llegeix una llista de socis del fitxer entrada.json (nom + ip de moment)
-    2on cada 4 segons fa "ping" a una IP de la llista per saber si es activa
-    3er cada 3 minuts genera un fitxer HTML, anomenat "pagina.html"
 
  El client ha de llegir el fitxer "pagina.html" una sola vegada
      ja que despres es recarrega automaticament cada 30 segons
@@ -34,6 +32,13 @@
 
     nodejs               - ens dona el web server
     python               - ens permet fer ping()
+
+When we modify the code we do :
+
+    git status                  - display changes files
+    git commit -am "comentari"  - commit files to send
+    git push -u origin master   - send files
+
 
 Comprovat :
 

@@ -95,9 +95,10 @@
 // 1.3.i - fix Luis Mabilon
 // 1.3.j - try to catch SIGHUP to reload config file
 //          sudo   kill -1  1319 ; where 1319 is the output of "ps -ef | grep 1_g"
+// 1.3.k - fix mConsole input at start
 //
 
-var myVersio     = "v1.3.j" ;
+var myVersio     = "v1.3.k" ;
 
 var express     = require( 'express' ) ;
 var app         = express() ;
@@ -109,6 +110,7 @@ var iNumSocis ;                    // numero actual de socis
 var dades_socis ;                  // guardem les dades 
 var idxSoci = 0 ;                  // soci amb el que estem treballant ara mateix
 var Detalls = 1 ;                  // control de la trassa que generem via "mConsole"
+var szTraza = " " ;                // input to mConsole
 
 var python_options = {
     mode: 'text',
@@ -158,6 +160,7 @@ function genTimeStamp ( arg ) {
 } ; // genTimeStamp()
 
 function mConsole ( szIn ) {
+
     if ( Detalls == 1 ) {
         console.log( genTimeStamp() + ' - ' + szIn ) ;
     } ;
@@ -489,8 +492,10 @@ function llegir_JSON( fitxer_entrada ) {
 
 // Write an initial message into console.
 
-	mConsole( "+++ +++ +++ +++ TIMER app starts. Versio[%s], HN[%s], TimeStamp[%s].", myVersio, app.get('appHostname'), genTimeStamp() ) ;
+	var szOut = "+++ +++ +++ +++ TIMER app starts. Versio["+myVersio+"], " ;
+        szOut += "HN["+app.get('appHostname')+"], TimeStamp["+genTimeStamp()+"]." ;
 
+	mConsole( szOut ) ;
 
 // implement branches answering the client requests
 
@@ -527,7 +532,8 @@ app.get( '/events', function ( req, res ) {
 
 app.get( '/', function (req, res) {
 
-    mConsole( ">>> got /, root. Send INICI.HTML " ) ;
+    szTraza = ">>> got /, root. Send INICI.HTML " ;
+    mConsole( szTraza )
     res.sendFile( __dirname + '/public/inici.html' ) ;
 
 }) ; // get "/"
@@ -536,8 +542,10 @@ app.get( '/', function (req, res) {
 // start server
 
 var listener = app.listen( app.get( 'cfgPort' ), function () {
-    mConsole( '(in) app listening on port', listener.address().port )
+    szTraza = '(in) app listening on port (' + listener.address().port + ').' ;
+    mConsole( szTraza ) ;
 })
 
-mConsole( '(out) APP listening at port', app.get( 'cfgPort' ) ) ;
+szTraza = '(out) APP listening at port (' + app.get( 'cfgPort' ) + ').' ;
+mConsole( szTraza ) ;
 
