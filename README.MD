@@ -4,12 +4,13 @@
     1er - llegeix una llista de socis del fitxer "entrada.json" amb (nom + ip) - uns 50 elements
     2on - cada 4 segons fa "ping" a una IP de la llista per saber si es activa - uns 200 segons
     3er - cada 5 minuts genera un fitxer HTML, anomenat "pagina.html"          - uns 300 segons
+    4rt - te un web server al port 3001
 
  El client pot accedir-hi des un browser amb la URL http://ip_o_nom-del-servidor:3001
+
  Si un agent FTP ho envia a Internet, sera a https://torrelles-guifi.000webhostapp.com/pagina.html
 
- El client ha de llegir el fitxer "pagina.html" una sola vegada
-     ja que despres es recarrega automaticament cada 30 segons
+ El client ha de llegir el fitxer "pagina.html" una sola vegada ja que despres es recarrega automaticament cada 30 segons
 
  Fitxers del directori :
 
@@ -35,7 +36,7 @@
 
 When we modify the code we do :
 
-    git status                  - display changes files
+    git status                  - display changed files
     git commit -am "comentari"  - commit files to send
     git push -u origin master   - send files
 
