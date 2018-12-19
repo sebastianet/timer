@@ -96,9 +96,10 @@
 // 1.3.j - try to catch SIGHUP to reload config file
 //          sudo   kill -1  1319 ; where 1319 is the output of "ps -ef | grep 1_g"
 // 1.3.k - fix mConsole input at start
+// 1.3.l - improve Title
 //
 
-var myVersio     = "v1.3.k" ;
+var myVersio     = "v1.3.l" ;
 
 var express     = require( 'express' ) ;
 var app         = express() ;
@@ -363,7 +364,7 @@ function myTimeout_Gen_HTML_Function ( arg ) { // generar pagina HTML
         S1 += '<META HTTP-EQUIV="Refresh" CONTENT="30;URL=./pagina.html">\n' ;
         S1 += '<LINK REL="SHORTCUT ICON" HREF="./favicon.ico";>\n' ;
         S1 += '<LINK REL=STYLESHEET HREF="pagina.css" TYPE="text/css">\n' ;
-        S1 += '<TITLE>' + 'Qsocis at ' + (new Date).hhmmss() + '</TITLE>\n' ;
+        S1 += '<TITLE>' + '*** qSocis at ' + (new Date).hhmmss() + ' ***</TITLE>\n' ;
         S1 += '</HEAD>\n<BODY>\n' ;
 
         var szTR = '.' ;
