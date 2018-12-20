@@ -50,6 +50,7 @@
 //    https://www.loggly.com/blog/exceptional-logging-of-exceptions-in-python/
 //    https://nodejs.org/api/fs.html#fs_fs_writefile_file_data_options_callback
 //    https://nodejs.org/api/util.html
+//    https://www.npmjs.com/package/node-wget
 //
 // Pendent :
 //
@@ -97,12 +98,16 @@
 //          sudo   kill -1  1319 ; where 1319 is the output of "ps -ef | grep 1_g"
 // 1.3.k - fix mConsole input at start
 // 1.3.l - improve Title
+// 2.0.a - use WGET() instead of PING()
 //
 
-var myVersio     = "v1.3.l" ;
+var myVersio     = "v2.0.a" ;
 
 var express     = require( 'express' ) ;
 var app         = express() ;
+
+var wget        = require( 'node-wget' ) ;
+
 const fs        = require( 'fs' ) ; // manage filesystem
 var PythonShell = require( 'python-shell' ) ;
 var util        = require( 'util' ) ;
@@ -112,6 +117,11 @@ var dades_socis ;                  // guardem les dades
 var idxSoci = 0 ;                  // soci amb el que estem treballant ara mateix
 var Detalls = 1 ;                  // control de la trassa que generem via "mConsole"
 var szTraza = " " ;                // input to mConsole
+
+
+// equivalent of "--no-check-certificate", prevent DEPTH_ZERO_SELF_SIGNED_CERT error
+process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0 ; 
+
 
 var python_options = {
     mode: 'text',
@@ -140,7 +150,7 @@ var fitxer_entrada = process.argv[2] ;         // see ru.sh !
 // set some values in global var APP
 
     app.set( 'cfgPort', process.env.PORT || 3001 ) ;      // set port
-    app.set( 'cfgLapse_Gen_HTML', 180000 ) ;              // mili-segons - gen HTML every ... 5 minuts = 300 segons, 3 minuts = 180 seg.
+    app.set( 'cfgLapse_Gen_HTML', 300000 ) ;              // mili-segons - gen HTML every ... 5 minuts = 300 segons, 3 minuts = 180 seg.
     app.set( 'cfgLapse_Do_Ping', 4000 ) ;                 // mili-segons - do Ping every ... 4 seconds
     app.set( 'appHostname', require('os').hostname() ) ;  // save hostname
 
@@ -235,7 +245,7 @@ process.on( 'SIGHUP', () => {
 
 // lets implement what to do when the TIMEOUT lapse expires
 
-// (1) ping timeout
+// (1).old - ping next IP timeout
 
 function myTimeout_Do_Ping_Function ( arg ) { // ping a un soci
 
@@ -268,7 +278,7 @@ var szLog ; // to write into log and Bitacora
         
 //        if ( err ) throw err;
 
-        szOut = util.format( "(+) Python results ( %s ).", results ) ; // results is an array of messages collected during execution
+        szOut = util.format( "(+) Python results ( %s )", results ) ; // results is an array of messages collected during execution
         mConsole( szOut ) ; 
 
 // if "RC 0"  then "on", if "RC KO" then "off"
@@ -320,6 +330,82 @@ var szLog ; // to write into log and Bitacora
     } ) ; // python shell call
 
 } ; // myTimeout_Do_Ping_Function()
+
+
+// (1).new - do WGET on the next IP
+
+function myTimeout_Do_Wget_Function ( arg ) { // do a WGET on next IP
+
+var szNow ; // to get timestamp
+var szLog ; // to write into log and Bitacora
+
+    var iWget_IP = dades_socis [ idxSoci ].ip ;
+    var szOut = " >>> timeout per fer WGET(). Soci " + idxSoci + "/" + iNumSocis + ". " ;
+    szOut += 'IP {' + iWget_IP + '}, ' ;
+    szOut += 'nom {' + dades_socis [ idxSoci ].user + '}, ' ;
+    szOut += 'q {' + dades_socis [ idxSoci ].estatus + '}' ;
+    mConsole( szOut ) ;
+
+// fem wget() 
+
+    var szTargetIP = 'http://' + iWget_IP ;
+
+    wget( {
+            url:  szTargetIP,   // 'https://raw.github.com/angleman/wgetjs/master/package.json',
+            dest: '/tmp/wget/', // destination path or path with filename, default is ./
+            timeout: 2000       // duration to wait for request fulfillment in milliseconds, default is 2 seconds
+        },
+        function (error, response, body) {
+
+            szNow = genTimeStamp() ; // get timestamp
+
+            if (error) {
+
+                console.log('--- wget() error:');
+                console.log(error);            // error encountered
+
+                if ( dades_socis [ idxSoci ].estatus != '-' ) { // ip was not down => ip goes down right now
+
+                    dades_socis [ idxSoci ].timestamp = szNow ; // set timestamp of the moment ip went down
+                    dades_socis [ idxSoci ].count = 0 ;         // set count to 0
+
+                    szLog = '--- DOWN --- ip (' + iWget_IP + ') soci (' + dades_socis [ idxSoci ].user + ').' ;
+                    Poner_Bitacora( szLog ) ;
+
+                } else { // ip was down and is down again, so count the event
+                    dades_socis [ idxSoci ].count = dades_socis [ idxSoci ].count +1 ;     // count "off" periods
+                } ;
+
+                dades_socis [ idxSoci ].estatus = '-' ; // set IP is DOWN
+
+            } else {
+
+                console.log('+++ wget() ok');
+
+                if ( dades_socis [ idxSoci ].estatus != '+' ) { // ip was not up => ip comes up right now
+
+                    dades_socis [ idxSoci ].timestamp = szNow ; // set timestamp of the moment ip went up
+                    dades_socis [ idxSoci ].count = 0 ;         // set count to 0
+
+                    szLog = '+++ .UP. +++ ip (' + iWget_IP + ') soci (' + dades_socis [ idxSoci ].user + ').' ;
+                    Poner_Bitacora( szLog ) ;
+
+                } else { // ip was up and is up again, so count the event
+                    dades_socis [ idxSoci ].count = dades_socis [ idxSoci ].count +1 ;     // count "on" periods
+                } ;
+
+                dades_socis [ idxSoci ].estatus = '+' ; // set IP is UP
+
+            } ; // no error = wget() ok
+
+            // apuntem al soci seguent
+            idxSoci = idxSoci + 1 ;
+            if ( idxSoci >= iNumSocis ) { idxSoci = 0 ; } ;
+
+        }
+    ) ; // wget()
+
+} ; // myTimeout_Do_Wget_Function()
 
 
 // (2) generate HTML timeout
@@ -399,7 +485,7 @@ function myTimeout_Gen_HTML_Function ( arg ) { // generar pagina HTML
         S4 += '<p>Tornar a la pagina <a href="./inici.html">principal</a> | ' ;
         S4 += 'Veure <a href="./events">events</a> (local net only) | ' ;
         S4 += '<a href="https://xarxatorrelles.cat/">Homepage Associacio Guifi Torrelles</a> - ' ;
-        S4 += 'Versio [' + myVersio + '] at host {' + app.get('appHostname') + '}.\n' ;
+        S4 += '/home/mate/nodejs-projects/timer/1_gen_html.js versio [' + myVersio + '] at host {' + app.get('appHostname') + '}.\n' ;
         S4 += '<hr>\n</BODY>\n</HTML>\n' ; // end of PAGINA.HTML
 
         var newFN_fp = __dirname + '/public/pagina.html' ;
@@ -488,7 +574,8 @@ function llegir_JSON( fitxer_entrada ) {
     setInterval( myTimeout_Gen_HTML_Function, app.get( 'cfgLapse_Gen_HTML' ) ) ; // lets call own function every defined lapse
 
 //    console.log( "set TO ping, timestamp" + (new Date).hhmmss() ) ;
-    setInterval( myTimeout_Do_Ping_Function, app.get( 'cfgLapse_Do_Ping' ) ) ;   //
+//    setInterval( myTimeout_Do_Ping_Function, app.get( 'cfgLapse_Do_Ping' ) ) ;   //
+    setInterval( myTimeout_Do_Wget_Function, app.get( 'cfgLapse_Do_Ping' ) ) ;   //
 
 
 // Write an initial message into console.

@@ -26,11 +26,11 @@ szDesti = sys.argv[1]                         # in nodejs we code "python_option
 print 'IP (',szDesti,').'                                      # ret string #1
 
 try:
-    response = pyping.ping( szDesti, timeout=900, count=2 )        # -t 900 -c 2
+    response = pyping.ping( szDesti, timeout=800, count=3 )        # -t 900 -c 2
     if response.ret_code == 0:
-        print( "RC 0 - Viagra, reachable" )          # 74.125.143.104
+        print( " RC 0 - Viagra, reachable" )          # 74.125.143.104
     else:
-        print( "RC KO - Promescent, unreachable" )   # 1.2.3.4
+        print( " RC KO - Promescent, unreachable" )   # 1.2.3.4
 except ZeroDivisionError:
-    print( "RC KO - divBy0" )
+    print( " RC KO - divBy0" )
 
