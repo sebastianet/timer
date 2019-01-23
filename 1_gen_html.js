@@ -56,6 +56,7 @@
 //
 //    . enviar correu quan un node caigui i estigui aixi una estoneta
 //    . fer servir logger as Winston or Morgan
+//    . https://stackoverflow.com/questions/54328388/wget-to-tmp-wget-produces-emfile-too-many-open-files
 //
 // Requisits : nodejs i python (see README.MD)
 //
@@ -98,15 +99,19 @@
 //          sudo   kill -1  1319 ; where 1319 is the output of "ps -ef | grep 1_g"
 // 1.3.k - fix mConsole input at start
 // 1.3.l - improve Title
-// 2.0.a - use WGET() instead of PING()
+// 2.0.a - use WGET() instead of PING() - https://github.com/angleman/wgetjs.git
+// 2.0.b - fix Error: EMFILE: too many open files, open '/tmp/wget/10.139.238.130' - use "dry: true" - no va
+// 2.0.c - try to close the file or delete it
+//          pend - https://www.npmjs.com/package/request - simplified HTTP client
+// 2.0.d - fs.close() before fs.unlink()
 //
 
-var myVersio     = "v2.0.a" ;
+var myVersio     = "v2.0.d" ;
 
 var express     = require( 'express' ) ;
 var app         = express() ;
 
-var wget        = require( 'node-wget' ) ;
+var wget        = require( 'node-wget' ) ; // https://www.npmjs.com/package/node-wget
 
 const fs        = require( 'fs' ) ; // manage filesystem
 var PythonShell = require( 'python-shell' ) ;
@@ -122,6 +127,12 @@ var szTraza = " " ;                // input to mConsole
 // equivalent of "--no-check-certificate", prevent DEPTH_ZERO_SELF_SIGNED_CERT error
 process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0 ; 
 
+var mkdirp = require( 'mkdirp' ) ;
+
+mkdirp('/tmp/wget', function (err) {
+    if (err) console.error(err)
+    else console.log( '+++ dir /tmp/wget created' ) ;
+} ) ; // mkdirp 
 
 var python_options = {
     mode: 'text',
@@ -354,6 +365,7 @@ var szLog ; // to write into log and Bitacora
             url:  szTargetIP,   // 'https://raw.github.com/angleman/wgetjs/master/package.json',
             dest: '/tmp/wget/', // destination path or path with filename, default is ./
             timeout: 2000       // duration to wait for request fulfillment in milliseconds, default is 2 seconds
+//            dry: true           // nothing loaded => always OK, no timeout
         },
         function (error, response, body) {
 
@@ -404,6 +416,27 @@ var szLog ; // to write into log and Bitacora
 
         }
     ) ; // wget()
+
+    var szIPfn = '/tmp/wget/' + iWget_IP ; // filename to close and/or delete
+    szLog = '*** remove WGET file (' + szIPfn + ') ***' ;
+    Poner_Bitacora( szLog ) ;
+
+    fs.close( szIPfn, err => {
+        if (err) throw err ;
+                                           // https://stackoverflow.com/questions/5315138/node-js-remove-file
+        fs.unlink( szIPfn, (err) => {          // delete file
+
+            if (err) {
+                if ( err.code === 'ENOENT' ) {
+                    mConsole( '--- file '+ szIPfn +' does not exist' ) ;
+                } else {
+                    throw err ; // fatal error : stop
+                } ;
+            } else {
+                mConsole( '+++ successfully deleted ' + szIPfn ) ;
+            } ;
+        } ) ; // unlink
+    } ) ; // close
 
 } ; // myTimeout_Do_Wget_Function()
 
@@ -509,7 +542,7 @@ function myTimeout_Gen_HTML_Function ( arg ) { // generar pagina HTML
 //                    } ;
 //                } else {
 //                    mConsole( '+++ (b3) successfully deleted ' + oldFN ) ;
-///               } ;
+//                } ;
 
 // (b4)
                 var newFN = './public/pagina.html' ;
