@@ -121,9 +121,10 @@
 // 2.0.m - put graceful
 // 2.1.a - use REQUEST() instead of WGET() {gracies, Pere}
 // 2.1.b - SUPERAGENT {Pere again}
+// 2.1.c - acceptar qualsevol resposta del servidor com OK
 //
 
-var myVersio     = "v2.1.b" ;
+var myVersio     = "v2.1.c" ;
 
 var express      = require( 'express' ) ;
 var app          = express() ;
@@ -558,10 +559,17 @@ var szLog ; // to write into log and Bitacora
 
             szNow = genTimeStamp() ; // get timestamp
 
-            if ( !err ) {
+            var bAcceptable = ( !err ) ||
+                              ( ( err ) && ( err.message == 'self signed certificate' ) ) ||
+                              ( ( err ) && ( err.message == 'Unauthorized' ) ) ||
+                              ( ( err ) && ( err.message == 'Not Found' ) ) ;
+            if ( bAcceptable ) {
 
-                szLog = '+++ superagent() ok. ip (' + iWget_IP + ').' ;
-                console.log( szLog ) ;
+                szLog = '+++ superagent() ok. ip (' + iWget_IP + '). ' ;
+                if ( err ) {
+                    szLog += 'Msg (' + err.message + '). ' ;
+                } ;
+                mConsole( szLog ) ;
 
                 if ( dades_socis [ idxSoci ].estatus != '+' ) { // ip was not up => ip comes up right now
 
@@ -578,7 +586,10 @@ var szLog ; // to write into log and Bitacora
 
             } else {
 
-                console.log( '--- superagent() error: ' + err ) ;
+                szLog  = '--- superagent() error (' + err + '). ' ;
+                szLog += 'Status (' + err.status + '). ' ;
+                szLog += 'Message (' + err.message + '). ' ;
+                mConsole( szLog ) ;
 
                 if ( dades_socis [ idxSoci ].estatus != '-' ) { // ip was not down => ip goes down right now
 
