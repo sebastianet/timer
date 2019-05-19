@@ -51,6 +51,11 @@
 //    https://nodejs.org/api/fs.html#fs_fs_writefile_file_data_options_callback
 //    https://nodejs.org/api/util.html
 //    https://www.npmjs.com/package/node-wget
+//    https://www.npmjs.com/package/request
+//    https://nodejs.org/api/http.html
+//    https://www.npmjs.com/package/superagent     sudo npm install superagent
+//    https://visionmedia.github.io/superagent/
+//    https://github.com/palbcn/nodesmonitor 
 //
 // Pendent :
 //
@@ -87,7 +92,7 @@
 // 1.2.b - locate JSON file in actual dir
 // 1.3.a - pass config file as cmd line param
 // 1.3.b - use __dirname as write(pagina.nueva) fail from omnia_restart
-//         write pagina.html directly, without "delete" neither "move" from pagina.nueva
+//           write pagina.html directly, without "delete" neither "move" from pagina.nueva
 // 1.3.c - mostrar Homepage al Estat de les Antenes
 // 1.3.d - no fer servir colsole.log enlloc, sino mConsole()
 // 1.3.e - use util.format as sprintf()
@@ -96,26 +101,44 @@
 // 1.3.h - fix Montse Potrony
 // 1.3.i - fix Luis Mabilon
 // 1.3.j - try to catch SIGHUP to reload config file
-//          sudo   kill -1  1319 ; where 1319 is the output of "ps -ef | grep 1_g"
+//           sudo   kill -1  1319 ; where 1319 is the output of "ps -ef | grep 1_g"
 // 1.3.k - fix mConsole input at start
 // 1.3.l - improve Title
 // 2.0.a - use WGET() instead of PING() - https://github.com/angleman/wgetjs.git
 // 2.0.b - fix Error: EMFILE: too many open files, open '/tmp/wget/10.139.238.130' - use "dry: true" - no va
+//           command to display number of open handles : lsof -i -n -P | grep nodejs
 // 2.0.c - try to close the file or delete it
-//          pend - https://www.npmjs.com/package/request - simplified HTTP client
+//           pend - https://www.npmjs.com/package/request - simplified HTTP client
 // 2.0.d - fs.close() before fs.unlink()
+// 2.0.e - remove fs.close() as it requires a FD, which I do not have
+// 2.0.f - specify destination filename /tmp/wget/fn_wget.txt
+// 2.0.g - use require( 'wgetjs' ) instead of require( 'node-wget' )
+// 2.0.h - borrar fitxer directe, remove 2.0.g
+// 2.0.i - dont delete but overwrite
+// 2.0.j - delete plus https://github.com/isaacs/node-graceful-fs : npm install graceful-fs --save
+// 2.0.k - remove graceful-fs : internal/fs/utils.js:458
+// 2.0.l - say "require('dotenv').config()"
+// 2.0.m - put graceful
+// 2.1.a - use REQUEST() instead of WGET() {gracies, Pere}
+// 2.1.b - SUPERAGENT {Pere again}
 //
 
-var myVersio     = "v2.0.d" ;
+var myVersio     = "v2.1.b" ;
 
-var express     = require( 'express' ) ;
-var app         = express() ;
+var express      = require( 'express' ) ;
+var app          = express() ;
 
-var wget        = require( 'node-wget' ) ; // https://www.npmjs.com/package/node-wget
+ require('dotenv').config() ;
 
-const fs        = require( 'fs' ) ; // manage filesystem
-var PythonShell = require( 'python-shell' ) ;
-var util        = require( 'util' ) ;
+var wget         = require( 'node-wget' ) ; // https://www.npmjs.com/package/node-wget
+// var wget        = require( 'wgetjs' ) ; // https://github.com/angleman/wgetjs
+var request      = require( 'request' ) ;   // https://www.npmjs.com/package/request
+const superagent = require('superagent');
+
+var fs           = require( 'fs' ) ; // manage filesystem
+// var fs          = require( 'graceful-fs' ) ; // manage filesystem
+var PythonShell  = require( 'python-shell' ) ;
+var util         = require( 'util' ) ;
 
 var iNumSocis ;                    // numero actual de socis
 var dades_socis ;                  // guardem les dades 
@@ -125,7 +148,7 @@ var szTraza = " " ;                // input to mConsole
 
 
 // equivalent of "--no-check-certificate", prevent DEPTH_ZERO_SELF_SIGNED_CERT error
-process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0 ; 
+// process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0 ; 
 
 var mkdirp = require( 'mkdirp' ) ;
 
@@ -138,7 +161,7 @@ var python_options = {
     mode: 'text',
     pythonPath: '/usr/bin/python',     // in Windows, must be blank, as we did set PYTHONPATH envir var
     pythonOptions: ['-u'],
-//    scriptPath: '/home/pi/timer',                        // location of the python file .. in Odin
+//    scriptPath: '/home/pi/timer',                      // location of the python file .. in Odin
 //    scriptPath: 'c:/sebas/miscosas/node/timer',        // .. in Windows
 //    scriptPath: '/home/sebas/node_projects/timer',     // .. in T60 Ubuntu
     scriptPath: '/home/mate/nodejs-projects/timer',    //..  in Punt Omnia Ubuntu
@@ -256,7 +279,7 @@ process.on( 'SIGHUP', () => {
 
 // lets implement what to do when the TIMEOUT lapse expires
 
-// (1).old - ping next IP timeout
+// (1).old.1 - ping next IP timeout
 
 function myTimeout_Do_Ping_Function ( arg ) { // ping a un soci
 
@@ -343,7 +366,7 @@ var szLog ; // to write into log and Bitacora
 } ; // myTimeout_Do_Ping_Function()
 
 
-// (1).new - do WGET on the next IP
+// (1).old.2 - do WGET on the next IP
 
 function myTimeout_Do_Wget_Function ( arg ) { // do a WGET on next IP
 
@@ -363,18 +386,18 @@ var szLog ; // to write into log and Bitacora
 
     wget( {
             url:  szTargetIP,   // 'https://raw.github.com/angleman/wgetjs/master/package.json',
-            dest: '/tmp/wget/', // destination path or path with filename, default is ./
+            dest: '/tmp/wget/fn_wget.txt', // destination path or path with filename, default is ./
             timeout: 2000       // duration to wait for request fulfillment in milliseconds, default is 2 seconds
 //            dry: true           // nothing loaded => always OK, no timeout
         },
-        function (error, response, body) {
+        function ( error, response, body ) {
 
             szNow = genTimeStamp() ; // get timestamp
 
             if (error) {
 
-                console.log('--- wget() error:');
-                console.log(error);            // error encountered
+                console.log( '--- wget() error:' ) ;
+                console.log( error ) ;            // error encountered
 
                 if ( dades_socis [ idxSoci ].estatus != '-' ) { // ip was not down => ip goes down right now
 
@@ -392,7 +415,7 @@ var szLog ; // to write into log and Bitacora
 
             } else {
 
-                console.log('+++ wget() ok');
+                console.log( '+++ wget() ok' ) ;
 
                 if ( dades_socis [ idxSoci ].estatus != '+' ) { // ip was not up => ip comes up right now
 
@@ -414,17 +437,18 @@ var szLog ; // to write into log and Bitacora
             idxSoci = idxSoci + 1 ;
             if ( idxSoci >= iNumSocis ) { idxSoci = 0 ; } ;
 
-        }
+        } 
     ) ; // wget()
 
-    var szIPfn = '/tmp/wget/' + iWget_IP ; // filename to close and/or delete
+//      var szIPfn = '/tmp/wget/' + iWget_IP ;   // filename to close and/or delete
+    var szIPfn = '/tmp/wget/fn_wget.txt' ;   // filename to close and/or delete
     szLog = '*** remove WGET file (' + szIPfn + ') ***' ;
     Poner_Bitacora( szLog ) ;
 
-    fs.close( szIPfn, err => {
-        if (err) throw err ;
-                                           // https://stackoverflow.com/questions/5315138/node-js-remove-file
-        fs.unlink( szIPfn, (err) => {          // delete file
+//    fs.close( szIPfn, err => {
+//        if (err) throw err ;
+                                          // https://stackoverflow.com/questions/5315138/node-js-remove-file
+        fs.unlink( szIPfn, (err) => {     // delete file
 
             if (err) {
                 if ( err.code === 'ENOENT' ) {
@@ -436,9 +460,147 @@ var szLog ; // to write into log and Bitacora
                 mConsole( '+++ successfully deleted ' + szIPfn ) ;
             } ;
         } ) ; // unlink
-    } ) ; // close
+
+//    } ) ; // close
 
 } ; // myTimeout_Do_Wget_Function()
+
+
+// (1).old.3 - do REQUEST() on the next IP
+
+function myTimeout_Do_Request_Function ( arg ) { // request() next IP
+
+var szNow ; // to get timestamp
+var szLog ; // to write into log and Bitacora
+
+    var iWget_IP = dades_socis [ idxSoci ].ip ;
+    var szTargetIP = 'http://' + iWget_IP ;
+
+    var szOut = ">>> timeout per fer REQUEST(). Soci " + idxSoci + "/" + iNumSocis + ". " ;
+    szOut += 'IP {' + iWget_IP + '}, ' ;
+    szOut += 'nom {' + dades_socis [ idxSoci ].user + '}, ' ;
+    szOut += 'q {' + dades_socis [ idxSoci ].estatus + '}' ;
+    mConsole( szOut ) ;
+
+    request( szTargetIP, {timeout: 1500}, function ( error, response, body ) {
+
+        szNow = genTimeStamp() ; // get timestamp
+
+//        if ( !error && response.statusCode == 200 ) {
+        if ( !error ) {
+
+            szLog = '+++ request() ok. ip (' + iWget_IP + ') q(' + response.statusCode + ').' ;
+            console.log( szLog ) ;
+
+            if ( dades_socis [ idxSoci ].estatus != '+' ) { // ip was not up => ip comes up right now
+
+                dades_socis [ idxSoci ].timestamp = szNow ; // set timestamp of the moment ip went up
+                dades_socis [ idxSoci ].count = 0 ;         // set count to 0
+
+                szLog = '+++ .UP. +++ ip (' + iWget_IP + ') soci (' + dades_socis [ idxSoci ].user + ').' ;
+                Poner_Bitacora( szLog ) ;
+
+            } else { // ip was up and is up again, so count the event
+                dades_socis [ idxSoci ].count = dades_socis [ idxSoci ].count +1 ;     // count "on" periods
+            } ;
+            dades_socis [ idxSoci ].estatus = '+' ; // set IP is UP
+        }
+        else {
+
+            console.log( '--- request() error: ' + error ) ;
+
+            if ( dades_socis [ idxSoci ].estatus != '-' ) { // ip was not down => ip goes down right now
+
+                dades_socis [ idxSoci ].timestamp = szNow ; // set timestamp of the moment ip went down
+                dades_socis [ idxSoci ].count = 0 ;         // set count to 0
+
+                szLog = '--- DOWN --- ip (' + iWget_IP + ') soci (' + dades_socis [ idxSoci ].user + ').' ;
+                Poner_Bitacora( szLog ) ;
+
+            } else { // ip was down and is down again, so count the event
+                dades_socis [ idxSoci ].count = dades_socis [ idxSoci ].count +1 ;     // count "off" periods
+            } ;
+
+            dades_socis [ idxSoci ].estatus = '-' ; // set IP is DOWN
+        } ; // else
+
+        // apuntem al soci seguent
+        idxSoci = idxSoci + 1 ;
+        if ( idxSoci >= iNumSocis ) { idxSoci = 0 ; } ;
+
+    } ) ; // request()
+
+} ; // myTimeout_Do_Request_Function()
+
+
+// (1).new - use SUPERAGENT
+function myTimeout_Do_SuperAgent_Function ( arg ) { // superagent() next IP
+
+var szNow ; // to get timestamp
+var szLog ; // to write into log and Bitacora
+
+    var iWget_IP = dades_socis [ idxSoci ].ip ;
+    var szTargetIP = 'http://' + iWget_IP ;
+
+    var szOut = ">>> timeout per fer SUPERAGENT(). Soci " + idxSoci + "/" + iNumSocis + ". " ;
+    szOut += 'IP {' + iWget_IP + '}, ' ;
+    szOut += 'nom {' + dades_socis [ idxSoci ].user + '}, ' ;
+    szOut += 'q {' + dades_socis [ idxSoci ].estatus + '}' ;
+    mConsole( szOut ) ;
+
+    superagent
+        .get( szTargetIP ) 
+        .timeout({
+            response: 3000,  // Wait 3 seconds for the server to start sending,
+            deadline: 15000, // but allow 15 secondsfor the file to finish loading.
+         })
+        .end( function( err, data ) {
+
+            szNow = genTimeStamp() ; // get timestamp
+
+            if ( !err ) {
+
+                szLog = '+++ superagent() ok. ip (' + iWget_IP + ').' ;
+                console.log( szLog ) ;
+
+                if ( dades_socis [ idxSoci ].estatus != '+' ) { // ip was not up => ip comes up right now
+
+                    dades_socis [ idxSoci ].timestamp = szNow ; // set timestamp of the moment ip went up
+                    dades_socis [ idxSoci ].count = 0 ;         // set count to 0
+
+                    szLog = '+++ .UP. +++ ip (' + iWget_IP + ') soci (' + dades_socis [ idxSoci ].user + ').' ;
+                    Poner_Bitacora( szLog ) ;
+
+                } else { // ip was up and is up again, so count the event
+                    dades_socis [ idxSoci ].count = dades_socis [ idxSoci ].count +1 ;     // count "on" periods
+                } ;
+                dades_socis [ idxSoci ].estatus = '+' ; // set IP is UP
+
+            } else {
+
+                console.log( '--- superagent() error: ' + err ) ;
+
+                if ( dades_socis [ idxSoci ].estatus != '-' ) { // ip was not down => ip goes down right now
+
+                    dades_socis [ idxSoci ].timestamp = szNow ; // set timestamp of the moment ip went down
+                    dades_socis [ idxSoci ].count = 0 ;         // set count to 0
+
+                    szLog = '--- DOWN --- ip (' + iWget_IP + ') soci (' + dades_socis [ idxSoci ].user + ').' ;
+                    Poner_Bitacora( szLog ) ;
+
+                } else { // ip was down and is down again, so count the event
+                    dades_socis [ idxSoci ].count = dades_socis [ idxSoci ].count +1 ;     // count "off" periods
+                } ;
+
+                dades_socis [ idxSoci ].estatus = '-' ; // set IP is DOWN
+
+            } ;
+
+            // apuntem al soci seguent
+            idxSoci = idxSoci + 1 ;
+            if ( idxSoci >= iNumSocis ) { idxSoci = 0 ; } ;
+    } ) ;
+} ; // myTimeout_Do_SuperAgent_Function
 
 
 // (2) generate HTML timeout
@@ -608,7 +770,9 @@ function llegir_JSON( fitxer_entrada ) {
 
 //    console.log( "set TO ping, timestamp" + (new Date).hhmmss() ) ;
 //    setInterval( myTimeout_Do_Ping_Function, app.get( 'cfgLapse_Do_Ping' ) ) ;   //
-    setInterval( myTimeout_Do_Wget_Function, app.get( 'cfgLapse_Do_Ping' ) ) ;   //
+//    setInterval( myTimeout_Do_Wget_Function, app.get( 'cfgLapse_Do_Ping' ) ) ;   //
+//    setInterval( myTimeout_Do_Request_Function, app.get( 'cfgLapse_Do_Ping' ) ) ;   //
+    setInterval( myTimeout_Do_SuperAgent_Function, app.get( 'cfgLapse_Do_Ping' ) ) ;   //
 
 
 // Write an initial message into console.

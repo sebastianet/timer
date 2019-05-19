@@ -15,8 +15,13 @@
     "url": "git://github.com/sebastianet/timer.git"
   },
   "dependencies": {
-    "express": "^4.15.3",
-    "python-shell": "^0.4.0"
+    "dotenv": "^7.0.0",
+    "express": "^4.16.4",
+    "graceful-fs": "^4.1.15",
+    "mkdirp": "^0.5.1",
+    "node-wget": "^0.4.3",
+    "python-shell": "^1.0.7",
+    "superagent": "^5.0.5"
   },
   "devDependencies": {}
 }
