@@ -552,8 +552,8 @@ var szLog ; // to write into log and Bitacora
     superagent
         .get( szTargetIP ) 
         .timeout({
-            response: 3000,  // Wait 3 seconds for the server to start sending,
-            deadline: 15000, // but allow 15 secondsfor the file to finish loading.
+            response: 3000,  // wait 3 seconds for the server to start sending,
+            deadline: 15000, // but allow 15 seconds for the file to finish loading.
          })
         .end( function( err, data ) {
 
@@ -563,11 +563,12 @@ var szLog ; // to write into log and Bitacora
                               ( ( err ) && ( err.message == 'self signed certificate' ) ) ||
                               ( ( err ) && ( err.message == 'Unauthorized' ) ) ||
                               ( ( err ) && ( err.message == 'Not Found' ) ) ;
+//            var bAcceptable = !err || err.status ;
             if ( bAcceptable ) {
 
-                szLog = '+++ superagent() ok. ip (' + iWget_IP + '). ' ;
+                szLog = '+++ superagent() acceptable response. IP (' + iWget_IP + '). ' ;
                 if ( err ) {
-                    szLog += 'Msg (' + err.message + '). ' ;
+                    szLog += 'Error message (' + err.message + '), status (' + err.status + '). ' ;
                 } ;
                 mConsole( szLog ) ;
 
