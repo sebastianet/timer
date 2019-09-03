@@ -122,9 +122,10 @@
 // 2.1.a - use REQUEST() instead of WGET() {gracies, Pere}
 // 2.1.b - SUPERAGENT {Pere again}
 // 2.1.c - acceptar qualsevol resposta del servidor com OK
+// 2.1.d - faltava "Â)" en detectar EADDRINUSE
 //
 
-var myVersio     = "v2.1.c" ;
+var myVersio     = "v2.1.d" ;
 
 var express      = require( 'express' ) ;
 var app          = express() ;
@@ -841,8 +842,15 @@ app.get( '/', function (req, res) {
 var listener = app.listen( app.get( 'cfgPort' ), function () {
     szTraza = '(in) app listening on port (' + listener.address().port + ').' ;
     mConsole( szTraza ) ;
-})
+}).on( 'error', function( err ) {
+    if ( err.errno === 'EADDRINUSE' ) { // catch port in use error
+        console.error( '--- port (' + app.listen( app.get( 'cfgPort' ) + ') busy, process.exit() ---' ) ) ;
+        process.exit() ;
+    } else {
+        console.log( err ) ;
+    } ;
+} ) ; // app.listen
 
-szTraza = '(out) APP listening at port (' + app.get( 'cfgPort' ) + ').' ;
-mConsole( szTraza ) ;
+// szTraza = '(out) APP listening at port (' + app.get( 'cfgPort' ) + ').' ;
+// mConsole( szTraza ) ;
 

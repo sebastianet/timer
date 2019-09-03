@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# shell per engegar la monitoritzacio de nodes de guifi
+# comanda : "sudo ./ru.sh"
+
 mydate=`date +"y%Y/m%m/d%d"`
 mytime=`date +"h%H:m%M"`
 
